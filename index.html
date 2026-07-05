@@ -46,7 +46,7 @@
       --primary-border: #2f5147;
       --shadow: 0 18px 50px rgba(51, 35, 20, 0.12);
       --han-size: 30px;
-      --han-font: "LXGW WenKai GB";
+      --han-font: "Noto Serif SC";
       --han-weight: 400;
       --han-fallback: "WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3", "Jigmo", "Jigmo SC", serif;
     }
@@ -388,8 +388,10 @@
     .insp-form .cp { font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--faint); }
     .insp-form .fn { font-size: 11px; color: var(--accent); }
     .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-    .font-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); }
-    .font-cell .fname { padding: 6px 9px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .font-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); transition: opacity .2s ease; }
+    .font-cell.is-loading { opacity: .4; }
+    .font-cell.is-loading .fname::after { content: " · 加载中"; color: var(--faint); }
+    .font-cell .fname { padding: 6px 9px; font-size: 11px; line-height: 1.4; color: var(--muted); border-bottom: 1px solid var(--line); min-height: 34px; }
     .font-cell .fglyph { display: grid; place-items: center; min-height: 96px; font-size: 56px; line-height: 1; padding: 8px; }
 
     @media (max-width: 760px) {
@@ -521,18 +523,18 @@
 
     const FALLBACK = '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3", "Jigmo", "Jigmo SC", serif';
     const FONTS = [
-      { id: "lxgw-gb",     label: "霞鹜文楷 GB（默认）", family: '"LXGW WenKai GB"', weight: 400 },
-      { id: "wenjin",      label: "文津明体（覆盖广）", family: '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3"', weight: 400 },
-      { id: "genki",       label: "源起明体 TC", family: '"GenKiMin2TC"', weight: 400 },
-      { id: "genyo",       label: "源样明体 TC", family: '"GenYoMin2TC"', weight: 400 },
-      { id: "lxgw",        label: "霞鹜文楷", family: '"LXGW WenKai"', weight: 400 },
-      { id: "lxgw-tc",     label: "霞鹜文楷 TC", family: '"LXGW WenKai TC"', weight: 400 },
-      { id: "jigmo",       label: "Jigmo 字云（覆盖极广）", family: '"Jigmo", "Jigmo SC"', weight: 400 },
-      { id: "noto-serif",  label: "思源宋体 SC", family: '"Noto Serif SC"', weight: 400 },
-      { id: "noto-sans",   label: "思源黑体 SC", family: '"Noto Sans SC"', weight: 400 },
-      { id: "black-sugar", label: "黑糖话梅", family: '"Black Sugar Plum Candy"', weight: 700 },
-      { id: "sys-serif",   label: "系统宋体", family: "serif", weight: 400 },
-      { id: "sys-sans",    label: "系统黑体", family: "sans-serif", weight: 400 },
+      { id: "lxgw-gb",     label: "霞鹜文楷 GB · LXGW WenKai GB", family: '"LXGW WenKai GB"', weight: 400 },
+      { id: "wenjin",      label: "文津明体 · WenJin Mincho", family: '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3"', weight: 400 },
+      { id: "genki",       label: "源起明体 TC · Genki Mincho TC", family: '"GenKiMin2TC"', weight: 400 },
+      { id: "genyo",       label: "源样明体 TC · GenYo Mincho TC", family: '"GenYoMin2TC"', weight: 400 },
+      { id: "lxgw",        label: "霞鹜文楷 · LXGW WenKai", family: '"LXGW WenKai"', weight: 400 },
+      { id: "lxgw-tc",     label: "霞鹜文楷 TC · LXGW WenKai TC", family: '"LXGW WenKai TC"', weight: 400 },
+      { id: "jigmo",       label: "字云 · Jigmo", family: '"Jigmo", "Jigmo SC"', weight: 400 },
+      { id: "noto-serif",  label: "思源宋体 SC · Noto Serif SC", family: '"Noto Serif SC"', weight: 400 },
+      { id: "noto-sans",   label: "思源黑体 SC · Noto Sans SC", family: '"Noto Sans SC"', weight: 400 },
+      { id: "black-sugar", label: "黑糖话梅 · Black Sugar Plum Candy", family: '"Black Sugar Plum Candy"', weight: 700 },
+      { id: "sys-serif",   label: "系统宋体 · System Serif", family: "serif", weight: 400 },
+      { id: "sys-sans",    label: "系统黑体 · System Sans", family: "sans-serif", weight: 400 },
     ];
 
     // ---------- helpers ----------
@@ -559,7 +561,7 @@
       fltTrad: false,
       fltVar: false,
       fltNote: false,
-      font: "lxgw-gb",
+      font: "noto-serif",
       size: 30,
       theme: "light",
     };
@@ -654,26 +656,38 @@
     // For the comparison grid, drop the shared broad fallback so an unloaded
     // font degrades to a plain system font rather than collapsing onto WenJin/Jigmo.
     function fontGridHtml(ch) {
+      // Primary font first (wins for characters it covers), then the broad
+      // fallback so rare/astral characters still render instead of showing tofu.
+      // Cells start dimmed (is-loading) and are revealed as their own font loads.
       return FONTS.map(ft => {
-        const generic = /serif/.test(ft.id) ? ft.family : ft.family + ", " + (/sans|sugar/.test(ft.id) ? "sans-serif" : "serif");
-        return `<div class="font-cell"><div class="fname">${esc(ft.label)}</div>
-          <div class="fglyph" style="font-family:${generic};font-weight:${ft.weight}">${esc(ch)}</div></div>`;
+        const stack = /^sys-/.test(ft.id) ? ft.family : `${ft.family}, ${FALLBACK}`;
+        const loading = /^sys-/.test(ft.id) ? "" : " is-loading";
+        return `<div class="font-cell${loading}" data-fid="${ft.id}"><div class="fname">${esc(ft.label)}</div>
+          <div class="fglyph" style="font-family:${stack};font-weight:${ft.weight}">${esc(ch)}</div></div>`;
       }).join("");
     }
 
-    // Force the exact webfont slices for these characters to download, then
-    // re-render so every cell paints with its intended (now-loaded) font.
-    function ensureFonts(chars, done) {
-      if (!document.fonts || !document.fonts.load) { done(); return; }
-      const jobs = [];
+    // Load each cell's webfont independently and reveal it the moment its own
+    // font is ready — so slow fonts never leave the whole grid on one fallback.
+    function loadFontGrid(ch) {
+      const grid = $("#fontGrid");
+      if (!grid) return;
+      const canLoad = document.fonts && document.fonts.load;
       FONTS.forEach(ft => {
-        if (/^sys-/.test(ft.id)) return;
-        ft.family.split(",").forEach(fam => {
-          fam = fam.trim();
-          chars.forEach(ch => { try { jobs.push(document.fonts.load(`${ft.weight} 40px ${fam}`, ch)); } catch (e) {} });
+        const cell = grid.querySelector(`.font-cell[data-fid="${ft.id}"]`);
+        if (!cell || !cell.classList.contains("is-loading")) return;
+        if (!canLoad) { cell.classList.remove("is-loading"); return; }
+        const fams = ft.family.split(",").map(s => s.trim());
+        Promise.allSettled(fams.map(fam => {
+          try { return document.fonts.load(`${ft.weight} 40px ${fam}`, ch); } catch (e) { return Promise.resolve(); }
+        })).then(() => {
+          // Replace the glyph node so it repaints with the now-loaded font even
+          // if font-display's swap window had already expired.
+          const glyph = cell.querySelector(".fglyph");
+          if (glyph) glyph.replaceWith(glyph.cloneNode(true));
+          cell.classList.remove("is-loading");
         });
       });
-      Promise.allSettled(jobs).then(done);
     }
 
     function openInspector(r) {
@@ -684,10 +698,14 @@
       const allForms = (r.t || []).map(f => ({ f, v: false })).concat((r.v || []).map(f => ({ f, v: true })));
       if (allForms.length) {
         parts.push(`<div class="insp-section"><h3>繁体字 / 异体字对照</h3><div class="insp-forms">
-          ${allForms.map(({ f, v }) => `<div class="insp-form${v ? " is-variant" : ""}">
+          ${allForms.map(({ f, v }) => {
+            const base = v ? "异体字" : "繁体字";
+            const note = f.n && f.n.cat !== base ? " · " + esc(f.n.cat) : "";
+            return `<div class="insp-form${v ? " is-variant" : ""}">
             <span class="c">${esc(f.c)}</span><span class="cp">${esc(f.cp)}</span>
-            <span class="fn">${v ? "异体字" : "繁体字"}${f.n ? " · " + esc(f.n.cat) : ""}</span>
-          </div>`).join("")}</div></div>`);
+            <span class="fn">${base}${note}</span>
+          </div>`;
+          }).join("")}</div></div>`);
       } else {
         parts.push(`<div class="insp-section"><h3>繁体字 / 异体字对照</h3><p style="color:var(--muted);font-size:13px">该字无繁体、异体对应（不在附表一中）。</p></div>`);
       }
@@ -695,11 +713,7 @@
       $("#inspBody").innerHTML = parts.join("");
       $("#inspector").setAttribute("aria-hidden", "false");
       document.body.classList.add("is-modal-open");
-      // Also warm the currently selected table font for the form glyphs.
-      ensureFonts([r.c], () => {
-        const grid = $("#fontGrid");
-        if (grid) grid.innerHTML = fontGridHtml(r.c); // repaint with loaded fonts
-      });
+      requestAnimationFrame(() => loadFontGrid(r.c));
     }
     function cpDecimalNote(cpStr) { const n = cpInt(cpStr); return isNaN(n) ? "" : `十进制 ${n}`; }
     function closeInspector() {
@@ -757,7 +771,7 @@
       if (state.fltTrad) p.set("t", "1");
       if (state.fltVar) p.set("v", "1");
       if (state.fltNote) p.set("n", "1");
-      if (state.font !== "lxgw-gb") p.set("f", state.font);
+      if (state.font !== "noto-serif") p.set("f", state.font);
       if (state.theme !== "light") p.set("th", state.theme);
       history.replaceState(null, "", p.toString() ? "#" + p.toString() : location.pathname);
     }
