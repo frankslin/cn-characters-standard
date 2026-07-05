@@ -852,14 +852,14 @@
     }
     function readHash() {
       const p = new URLSearchParams(location.hash.slice(1));
-      if (p.has("q")) state.query = p.get("q");
+      state.query = p.get("q") || "";
       draftQuery = state.query;
-      if (p.has("lv")) state.level = Number(p.get("lv")) || 0;
+      state.level = Number(p.get("lv")) || 0;
       state.fltTrad = p.get("t") === "1";
       state.fltVar = p.get("v") === "1";
       state.fltNote = p.get("n") === "1";
       if (p.has("f") && FONTS.some(f => f.id === p.get("f"))) state.font = p.get("f");
-      if (p.get("th") === "dark") state.theme = "dark";
+      if (p.get("th") === "dark") state.theme = "dark"; else if (!p.has("th")) state.theme = "light";
     }
 
     function commitSearch() {
