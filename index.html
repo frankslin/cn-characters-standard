@@ -392,7 +392,7 @@
     .insp-form .fn { font-size: 11px; color: var(--accent); }
     .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
     .font-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); }
-    .font-cell .fname { padding: 6px 9px; font-size: 11px; line-height: 1.4; color: var(--muted); border-bottom: 1px solid var(--line); min-height: 34px; }
+    .font-cell .fname { padding: 6px 9px; font-size: 11px; line-height: 1.4; color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .font-cell .fglyph { display: grid; place-items: center; min-height: 96px; font-size: 56px; line-height: 1; padding: 8px; }
 
     @media (max-width: 760px) {
@@ -661,7 +661,7 @@
     function fontGridHtml(ch) {
       return FONTS.map(ft => {
         const stack = /^sys-/.test(ft.id) ? ft.family : `${ft.family}, serif`;
-        return `<div class="font-cell" data-fid="${ft.id}"><div class="fname">${esc(ft.label)}</div>
+        return `<div class="font-cell" data-fid="${ft.id}"><div class="fname" title="${esc(ft.label)}">${esc(ft.label)}</div>
           <div class="fglyph" data-font-family="${esc(stack)}" data-font-weight="${esc(ft.weight)}">${esc(ch)}</div></div>`;
       }).join("");
     }
