@@ -61,8 +61,11 @@ Empty query → infinite-scroll full table (IntersectionObserver, batches of 80)
 
 ## Controls & state
 
-Central `state` object; every change funnels through `commit()` = `applyFilters()` + `refreshUI()`
-+ `syncHashDebounced()`. The top **stat chips are buttons** wired to the same filters and stay
+Central `state` object; every committed change funnels through `commit()` = `applyFilters()` +
+`refreshUI()` + `syncHashDebounced()`. The search input has a separate `draftQuery`; plain `input`
+events must not call `commit()` or clear/rebuild the list, because that makes the page height jump
+while users are still editing or composing text. Commit the search only on explicit actions such as
+Enter or the clear button. The top **stat chips are buttons** wired to the same filters and stay
 visually in sync with the level chips / checkboxes below. State is serialized to the URL hash.
 Default display font is **Noto Serif SC** (`--han-font`, `state.font = "noto-serif"`).
 

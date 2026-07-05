@@ -566,6 +566,7 @@
       size: 30,
       theme: "light",
     };
+    let draftQuery = state.query;
 
     let filtered = ROWS;
     let rendered = 0;
@@ -786,7 +787,7 @@
 
     // Reflect current state onto every control widget (keeps stats <-> filters in sync).
     function refreshUI() {
-      $("#search").value = state.query;
+      $("#search").value = draftQuery;
       $("#fontSelect").value = state.font;
       $("#sizeRange").value = state.size;
       $("#fltTrad").checked = state.fltTrad;
@@ -818,6 +819,7 @@
     function readHash() {
       const p = new URLSearchParams(location.hash.slice(1));
       if (p.has("q")) state.query = p.get("q");
+      draftQuery = state.query;
       if (p.has("lv")) state.level = Number(p.get("lv")) || 0;
       state.fltTrad = p.get("t") === "1";
       state.fltVar = p.get("v") === "1";
@@ -826,19 +828,25 @@
       if (p.get("th") === "dark") state.theme = "dark";
     }
 
+    function commitSearch() {
+      if (state.query === draftQuery) return;
+      state.query = draftQuery;
+      commit();
+    }
+
     // ---------- wire up ----------
     function initControls() {
       $("#fontSelect").innerHTML = FONTS.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join("");
       refreshUI();
 
-      let searchTimer = null;
       $("#search").addEventListener("input", (e) => {
-        state.query = e.target.value;
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(commit, 130);
+        draftQuery = e.target.value;
+      });
+      $("#search").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); commitSearch(); }
       });
       $("#searchClear").addEventListener("click", () => {
-        state.query = ""; commit(); $("#search").focus();
+        draftQuery = ""; state.query = ""; commit(); $("#search").focus();
       });
       $("#fontSelect").addEventListener("change", (e) => { state.font = e.target.value; applyFont(); syncHash(); });
       $("#sizeRange").addEventListener("input", (e) => { state.size = Number(e.target.value); applySize(); });
@@ -852,7 +860,7 @@
       $("#stats").addEventListener("click", (e) => {
         const btn = e.target.closest(".stat"); if (!btn) return;
         const key = btn.dataset.key;
-        if (key === "all") { state.level = 0; state.fltTrad = state.fltVar = state.fltNote = false; state.query = ""; }
+        if (key === "all") { state.level = 0; state.fltTrad = state.fltVar = state.fltNote = false; draftQuery = state.query = ""; }
         else if (key === "lv1" || key === "lv2" || key === "lv3") {
           const n = Number(key.slice(2)); state.level = state.level === n ? 0 : n;
         }
