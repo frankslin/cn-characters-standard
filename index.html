@@ -249,6 +249,9 @@
     .col-cp { width: 108px; color: var(--muted); font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
     .col-gc { width: 74px; }
     .col-note { width: 132px; }
+    .col-py { width: 120px; }
+    .py { display: inline-block; font-size: 12px; color: var(--muted); margin-right: 3px; white-space: nowrap; }
+    .py-more { border: none; background: none; color: var(--accent-2); cursor: pointer; font: inherit; font-size: 12px; padding: 0; }
 
     .han {
       font-family: var(--han-font), var(--han-fallback);
@@ -353,7 +356,7 @@
     @media (max-width: 760px) {
       main { padding: 16px; }
       .hero { padding: 24px 20px; }
-      .col-cp, .col-note { display: none; }
+      .col-cp, .col-py, .col-note { display: none; }
       .inspector-head .big { font-size: 54px; }
     }
   </style>
@@ -373,7 +376,7 @@
       <div class="controls-row">
         <div class="search-wrap">
           <input id="search" type="search" autocomplete="off" spellcheck="false"
-                 placeholder="检索：字符（干）、码位（U+5E72 / 5e72）或序号（1–8105）">
+                 placeholder="检索：字符（干）、拼音（gan / gān）、码位（U+5E72）或序号（1–8105）">
           <button type="button" id="searchClear" class="search-clear" aria-label="清除">×</button>
         </div>
         <div class="field-group">
@@ -404,6 +407,7 @@
             <th class="col-serial">序号</th>
             <th class="col-gc">规范字</th>
             <th class="col-cp">码位</th>
+            <th class="col-py">拼音</th>
             <th>繁体字</th>
             <th>异体字</th>
             <th class="col-note">附注</th>
@@ -459,6 +463,7 @@
     </div>
   </div>
 
+  <script src="./pinyin_data.js"></script>
   <script src="./data.js"></script>
   <script>
     const DATA = window.GCTABLE;
@@ -485,6 +490,13 @@
     function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
     function cpInt(cpStr) { const m = /([0-9a-fA-F]+)/.exec(cpStr || ""); return m ? parseInt(m[1], 16) : NaN; }
     function fmtCp(n) { return "U+" + n.toString(16).toUpperCase().padStart(4, "0"); }
+    // Build a regex that matches a pinyin reading with or without tones.
+    // Plain vowels expand to all tonal variants; v is treated as ü.
+    function pinyinRegex(q) {
+      const map = { a:"[aāáǎà]", e:"[eēéěè]", i:"[iīíǐì]", o:"[oōóǒò]", u:"[uūúǔù]", v:"[üǖǘǚǜ]", ü:"[üǖǘǚǜ]" };
+      const pat = Array.from(q.toLowerCase()).map(c => map[c] || c.replace(/[-[\]{}()*+?.,\\^$|#]/g, "\\$&")).join("");
+      return new RegExp("^" + pat + "$");
+    }
 
     // Precompute a search index: for each row, set of codepoint ints + set of chars
     ROWS.forEach(r => {
@@ -495,6 +507,7 @@
       (r.v || []).forEach(f => { cps.add(cpInt(f.cp)); chs.add(f.c); });
       r._cps = cps; r._chs = chs;
       r._note = !!((r.t || []).some(f => f.n) || (r.v || []).some(f => f.n));
+      r._py = (window.PINYIN && window.PINYIN[r.c]) || [];
     });
 
     // ---------- state ----------
@@ -515,19 +528,21 @@
     const BATCH = 80;
 
     // ---------- search parsing ----------
-    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'serial', serial} | {kind:'chars', chars:[...]}
+    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'serial', serial} | {kind:'pinyin', q} | {kind:'chars', chars:[...]}
     function parseQuery(q) {
       const t = q.trim();
       if (!t) return { kind: "all" };
       let m = /^(?:u\+|0x|\\u)\s*([0-9a-fA-F]{1,6})$/i.exec(t);
       if (m) return { kind: "cp", cp: parseInt(m[1], 16) };
-      // pure decimal: 1-8105 → serial number; larger → decimal codepoint
+      // pure decimal: 1-8105 → serial; larger → codepoint
       if (/^\d+$/.test(t)) {
         const n = parseInt(t, 10);
         if (n >= 1 && n <= 8105) return { kind: "serial", serial: n };
         if (n <= 0x10FFFF) return { kind: "cp", cp: n };
       }
-      // pure hex 2-6 digits -> hex codepoint
+      // pinyin (letters + tone marks + ü/v, no digits) — before hex: CJK codepoints always contain digits
+      if (/^[a-züāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]+$/i.test(t)) return { kind: "pinyin", q: t };
+      // hex codepoint with at least one letter
       if (/^[0-9a-fA-F]{2,6}$/.test(t) && /[a-fA-F]/.test(t)) return { kind: "cp", cp: parseInt(t, 16) };
       if (/^[0-9a-fA-F]{4,6}$/.test(t)) return { kind: "cp", cp: parseInt(t, 16) };
       // otherwise treat as characters
@@ -537,6 +552,7 @@
 
     function applyFilters() {
       const pq = parseQuery(state.query);
+      const pyRe = pq.kind === "pinyin" ? pinyinRegex(pq.q) : null;
       filtered = ROWS.filter(r => {
         if (state.level && r.lv !== state.level) return false;
         if (state.fltTrad && !(r.t && r.t.length)) return false;
@@ -544,6 +560,7 @@
         if (state.fltNote && !r._note) return false;
         if (pq.kind === "cp") { if (!r._cps.has(pq.cp)) return false; }
         else if (pq.kind === "serial") { if (r.s !== pq.serial) return false; }
+        else if (pq.kind === "pinyin") { if (!r._py.some(p => pyRe.test(p))) return false; }
         else if (pq.kind === "chars") { if (!pq.chars.some(c => r._chs.has(c))) return false; }
         return true;
       });
@@ -558,10 +575,11 @@
       let desc = "";
       if (pq.kind === "cp") desc = ` · 匹配码位 ${fmtCp(pq.cp)}（含繁体 / 异体）`;
       else if (pq.kind === "serial") desc = ` · 序号 ${pq.serial}`;
+      else if (pq.kind === "pinyin") desc = ` · 拼音 ${pq.q}`;
       else if (pq.kind === "chars") desc = ` · 匹配字符 ${pq.chars.join(" ")}`;
       $("#resultCount").innerHTML = `共 <b>${n.toLocaleString()}</b> 条${desc}`;
       $("#resultHint").innerHTML = n === 0
-        ? '<span class="warn">未找到匹配项，试试其他字符、码位或序号。</span>'
+        ? '<span class="warn">未找到匹配项，试试其他字符、码位、序号或拼音。</span>'
         : (state.query ? "" : "向下滚动浏览全表");
     }
 
@@ -580,10 +598,22 @@
       const notes = [];
       (r.t || []).concat(r.v || []).forEach(f => { if (f.n) notes.push(`<span class="note-tag">${esc(f.c)}·${esc(f.n.cat)}</span>`); });
       const noteCell = notes.length ? `<div class="note-tags">${notes.join("")}</div>` : '<span class="cell-empty">—</span>';
+      const py = r._py;
+      let pyCell;
+      if (!py.length) {
+        pyCell = '<span class="cell-empty">—</span>';
+      } else {
+        const SHOW = 3;
+        const shown = py.slice(0, SHOW).map(p => `<span class="py">${esc(p)}</span>`).join("");
+        pyCell = py.length > SHOW
+          ? `${shown}<button type="button" class="py-more" data-full="${esc(py.join(" "))}">…</button>`
+          : shown;
+      }
       return `<tr data-serial="${r.s}">
         <td class="col-serial">${r.s}</td>
         <td class="col-gc"><span class="gc" data-inspect-char="${esc(r.c)}" data-inspect-cp="${esc(r.cp)}" data-inspect-kind="norm"><span class="han">${esc(r.c)}</span></span></td>
         <td class="col-cp">${esc(r.cp)}</td>
+        <td class="col-py">${pyCell}</td>
         <td>${trad}</td>
         <td>${vars}</td>
         <td class="col-note">${noteCell}</td>
@@ -799,6 +829,12 @@
         const btn = e.target.closest(".insp-form[data-form-index]");
         if (!btn || !inspectorRow) return;
         renderInspector(inspectorRow, Number(btn.dataset.formIndex));
+      });
+      $("#tbody").addEventListener("click", (e) => {
+        const btn = e.target.closest(".py-more");
+        if (!btn) return;
+        const cell = btn.closest("td");
+        cell.innerHTML = btn.dataset.full.split(" ").map(p => `<span class="py">${esc(p)}</span>`).join("");
       });
       $("#inspClose").addEventListener("click", closeInspector);
       $("#inspector").addEventListener("click", (e) => { if (e.target === $("#inspector")) closeInspector(); });
