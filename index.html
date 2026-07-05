@@ -941,6 +941,12 @@
     }
 
     // ---------- boot ----------
+    window.addEventListener("hashchange", () => {
+      readHash();
+      applyFont(); applySize(); applyTheme();
+      $("#search").value = draftQuery;
+      commit();
+    });
     readHash();
     initControls();
     (() => {
