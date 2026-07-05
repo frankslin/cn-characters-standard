@@ -7,16 +7,17 @@
   <meta name="description" content="《通用规范汉字表》8105 字在线检索：规范字、繁体字、异体字对照（附表一）与附注，支持按 Unicode 码位或字符检索，可切换中文自由 webfonts。">
 
   <!-- 中文自由 webfonts（来自 free-fonts，按 unicode-range 切片，仅按需下载） -->
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/wenjin-mincho@1.0.0/wenjin-mincho.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/genki-mincho@1.0.0/genki-mincho.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/genyo-mincho@1.0.0/genyo-mincho.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/black-sugar-plum-candy@1.0.0/black-sugar-plum-candy.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai@1.0.0/lxgw-wenkai.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai-gb@1.0.0/lxgw-wenkai-gb.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai-tc@1.0.0/lxgw-wenkai-tc.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo@1.0.0/jigmo.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo-sc@1.0.0/jigmo-sc.css">
-  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo-tc@1.0.0/jigmo-tc.css">
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/wenjin-mincho@1.0.1/wenjin-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/genki-mincho@1.0.1/genki-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/genyo-mincho@1.0.1/genyo-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/black-sugar-plum-candy@1.0.1/black-sugar-plum-candy.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai@1.0.1/lxgw-wenkai.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai-gb@1.0.1/lxgw-wenkai-gb.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai-tc@1.0.1/lxgw-wenkai-tc.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo@1.0.1/jigmo.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo-sc@1.0.1/jigmo-sc.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo-tc@1.0.1/jigmo-tc.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&amp;family=Noto+Serif+SC:wght@400;500;600&amp;display=swap">
@@ -381,16 +382,16 @@
     .insp-forms { display: flex; flex-wrap: wrap; gap: 10px; }
     .insp-form {
       display: flex; flex-direction: column; align-items: center; gap: 2px;
-      padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); position: relative;
+      min-width: 70px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--field); color: var(--text); font: inherit; position: relative; cursor: pointer;
     }
     .insp-form.is-variant { border-style: dashed; }
+    .insp-form.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
     .insp-form .c { font-family: var(--han-font), var(--han-fallback); font-size: 46px; line-height: 1.1; }
     .insp-form .cp { font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--faint); }
     .insp-form .fn { font-size: 11px; color: var(--accent); }
     .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-    .font-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); transition: opacity .2s ease; }
-    .font-cell.is-loading { opacity: .4; }
-    .font-cell.is-loading .fname::after { content: " · 加载中"; color: var(--faint); }
+    .font-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); }
     .font-cell .fname { padding: 6px 9px; font-size: 11px; line-height: 1.4; color: var(--muted); border-bottom: 1px solid var(--line); min-height: 34px; }
     .font-cell .fglyph { display: grid; place-items: center; min-height: 96px; font-size: 56px; line-height: 1; padding: 8px; }
 
@@ -619,7 +620,8 @@
     function formHtml(f, variant) {
       const cat = f.n ? f.n.cat : "";
       const badge = f.n ? `<span class="fn-badge" data-cat="${esc(cat)}" title="${esc(cat)}（${esc(f.n.f)}）">注</span>` : "";
-      return `<span class="form${variant ? " is-variant" : ""}" title="${esc(f.c)} ${esc(f.cp)}${cat ? " · " + esc(cat) : ""}">
+      const kind = variant ? "variant" : "trad";
+      return `<span class="form${variant ? " is-variant" : ""}" data-inspect-char="${esc(f.c)}" data-inspect-cp="${esc(f.cp)}" data-inspect-kind="${kind}" title="${esc(f.c)} ${esc(f.cp)}${cat ? " · " + esc(cat) : ""}">
         ${badge}<span class="fchar han">${esc(f.c)}</span><span class="fcp">${esc(f.cp)}</span></span>`;
     }
 
@@ -631,7 +633,7 @@
       const noteCell = notes.length ? `<div class="note-tags">${notes.join("")}</div>` : '<span class="cell-empty">—</span>';
       return `<tr data-serial="${r.s}">
         <td class="col-serial">${r.s}</td>
-        <td class="col-gc"><span class="gc"><span class="han">${esc(r.c)}</span><span class="lv-badge" data-lv="${r.lv}">${["一","二","三"][r.lv-1]}</span></span></td>
+        <td class="col-gc"><span class="gc" data-inspect-char="${esc(r.c)}" data-inspect-cp="${esc(r.cp)}" data-inspect-kind="norm"><span class="han">${esc(r.c)}</span><span class="lv-badge" data-lv="${r.lv}">${["一","二","三"][r.lv-1]}</span></span></td>
         <td class="col-cp">${esc(r.cp)}</td>
         <td>${trad}</td>
         <td>${vars}</td>
@@ -653,67 +655,104 @@
     io.observe($("#sentinel"));
 
     // ---------- inspector ----------
-    // For the comparison grid, drop the shared broad fallback so an unloaded
-    // font degrades to a plain system font rather than collapsing onto WenJin/Jigmo.
+    // For the comparison grid, do not use the shared WenJin/Jigmo fallback chain.
+    // A broad ready fallback can satisfy shaping before the primary slice is used,
+    // so keep only a generic serif fallback here and let font-display: swap repaint.
     function fontGridHtml(ch) {
-      // Primary font first (wins for characters it covers), then the broad
-      // fallback so rare/astral characters still render instead of showing tofu.
-      // Cells start dimmed (is-loading) and are revealed as their own font loads.
       return FONTS.map(ft => {
-        const stack = /^sys-/.test(ft.id) ? ft.family : `${ft.family}, ${FALLBACK}`;
-        const loading = /^sys-/.test(ft.id) ? "" : " is-loading";
-        return `<div class="font-cell${loading}" data-fid="${ft.id}"><div class="fname">${esc(ft.label)}</div>
-          <div class="fglyph" style="font-family:${stack};font-weight:${ft.weight}">${esc(ch)}</div></div>`;
+        const stack = /^sys-/.test(ft.id) ? ft.family : `${ft.family}, serif`;
+        return `<div class="font-cell" data-fid="${ft.id}"><div class="fname">${esc(ft.label)}</div>
+          <div class="fglyph" data-font-family="${esc(stack)}" data-font-weight="${esc(ft.weight)}">${esc(ch)}</div></div>`;
       }).join("");
     }
 
-    // Load each cell's webfont independently and reveal it the moment its own
-    // font is ready — so slow fonts never leave the whole grid on one fallback.
+    function applyGlyphFont(el) {
+      if (!el) return;
+      if (el.dataset.fontFamily) el.style.fontFamily = el.dataset.fontFamily;
+      if (el.dataset.fontWeight) el.style.fontWeight = el.dataset.fontWeight;
+    }
+
+    function repaintGlyph(el) {
+      if (!el) return;
+      applyGlyphFont(el);
+      const stack = el.dataset.fontFamily;
+      if (!stack) return;
+      el.style.fontFamily = "serif";
+      void el.offsetWidth;
+      el.style.fontFamily = stack;
+    }
+
+    // Two separate concerns, kept independent on purpose:
+    // 1) Eagerly FETCH each cell's slice via document.fonts.load(). The grid's
+    //    DOM font stack intentionally excludes broad CJK webfont fallbacks so
+    //    native font-display: swap can repaint with the primary slice once ready.
+    //    We still force the download fire-and-forget; never gate the UI on it.
+    // 2) RENDER through CSS properties set after HTML parsing. Do not put quoted
+    //    font family stacks inside a double-quoted style attribute; it truncates
+    //    the attribute before the target family can be applied.
     function loadFontGrid(ch) {
       const grid = $("#fontGrid");
       if (!grid) return;
-      const canLoad = document.fonts && document.fonts.load;
-      FONTS.forEach(ft => {
-        const cell = grid.querySelector(`.font-cell[data-fid="${ft.id}"]`);
-        if (!cell || !cell.classList.contains("is-loading")) return;
-        if (!canLoad) { cell.classList.remove("is-loading"); return; }
-        const fams = ft.family.split(",").map(s => s.trim());
-        Promise.allSettled(fams.map(fam => {
-          try { return document.fonts.load(`${ft.weight} 40px ${fam}`, ch); } catch (e) { return Promise.resolve(); }
-        })).then(() => {
-          // Replace the glyph node so it repaints with the now-loaded font even
-          // if font-display's swap window had already expired.
-          const glyph = cell.querySelector(".fglyph");
-          if (glyph) glyph.replaceWith(glyph.cloneNode(true));
-          cell.classList.remove("is-loading");
+      grid.querySelectorAll(".fglyph").forEach(applyGlyphFont);
+
+      if (ch && document.fonts && document.fonts.load) {
+        FONTS.forEach(ft => {
+          const cell = grid.querySelector(`.font-cell[data-fid="${ft.id}"]`);
+          if (!cell || /^sys-/.test(ft.id)) return;
+          const loads = ft.family.split(",").map(fam => {
+            try { return document.fonts.load(`${ft.weight} 56px ${fam.trim()}`, ch); }
+            catch (e) { return Promise.resolve(); }
+          });
+          Promise.allSettled(loads).then(() => repaintGlyph(cell.querySelector(".fglyph")));
         });
-      });
+      }
+
+      const repaint = () => grid.querySelectorAll(".fglyph").forEach(repaintGlyph);
+      [250, 500, 1200, 2400, 4000].forEach(t => setTimeout(repaint, t));
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(repaint);
     }
 
-    function openInspector(r) {
-      $("#inspBig").textContent = r.c;
-      $("#inspTitle").textContent = `规范字 ${r.c} · 序号 ${r.s} · ${["一","二","三"][r.lv-1]}级`;
-      $("#inspMeta").textContent = `${r.cp} · ${cpDecimalNote(r.cp)}`;
-      const parts = [];
-      const allForms = (r.t || []).map(f => ({ f, v: false })).concat((r.v || []).map(f => ({ f, v: true })));
-      if (allForms.length) {
-        parts.push(`<div class="insp-section"><h3>繁体字 / 异体字对照</h3><div class="insp-forms">
-          ${allForms.map(({ f, v }) => {
-            const base = v ? "异体字" : "繁体字";
-            const note = f.n && f.n.cat !== base ? " · " + esc(f.n.cat) : "";
-            return `<div class="insp-form${v ? " is-variant" : ""}">
+    let inspectorRow = null;
+
+    function inspectorForms(r) {
+      return [{ c: r.c, cp: r.cp, label: "规范字", variant: false }]
+        .concat((r.t || []).map(f => ({ c: f.c, cp: f.cp, label: formLabel(f, false), variant: false })))
+        .concat((r.v || []).map(f => ({ c: f.c, cp: f.cp, label: formLabel(f, true), variant: true })));
+    }
+
+    function formLabel(f, variant) {
+      const base = variant ? "异体字" : "繁体字";
+      return f.n && f.n.cat !== base ? `${base} · ${f.n.cat}` : base;
+    }
+
+    function selectedFormIndex(forms, pick) {
+      if (!pick) return 0;
+      const i = forms.findIndex(f => f.c === pick.c && (!pick.cp || f.cp === pick.cp));
+      return i >= 0 ? i : 0;
+    }
+
+    function renderInspector(r, selectedIndex = 0) {
+      const forms = inspectorForms(r);
+      const selected = forms[selectedIndex] || forms[0];
+      $("#inspBig").textContent = selected.c;
+      $("#inspTitle").textContent = `${selected.label} ${selected.c} · 序号 ${r.s} · ${["一","二","三"][r.lv-1]}级`;
+      $("#inspMeta").textContent = `${selected.cp} · ${cpDecimalNote(selected.cp)}`;
+      $("#inspBody").innerHTML = [
+        `<div class="insp-section"><h3>字形切换</h3><div class="insp-forms">
+          ${forms.map((f, i) => `<button type="button" class="insp-form${f.variant ? " is-variant" : ""}${i === selectedIndex ? " is-active" : ""}" data-form-index="${i}" aria-pressed="${i === selectedIndex}">
             <span class="c">${esc(f.c)}</span><span class="cp">${esc(f.cp)}</span>
-            <span class="fn">${base}${note}</span>
-          </div>`;
-          }).join("")}</div></div>`);
-      } else {
-        parts.push(`<div class="insp-section"><h3>繁体字 / 异体字对照</h3><p style="color:var(--muted);font-size:13px">该字无繁体、异体对应（不在附表一中）。</p></div>`);
-      }
-      parts.push(`<div class="insp-section"><h3>各字体字形对比</h3><div class="font-grid" id="fontGrid">${fontGridHtml(r.c)}</div></div>`);
-      $("#inspBody").innerHTML = parts.join("");
+            <span class="fn">${esc(f.label)}</span>
+          </button>`).join("")}</div></div>`,
+        `<div class="insp-section"><h3>各字体字形对比</h3><div class="font-grid" id="fontGrid">${fontGridHtml(selected.c)}</div></div>`
+      ].join("");
+      requestAnimationFrame(() => loadFontGrid(selected.c));
+    }
+
+    function openInspector(r, pick) {
+      inspectorRow = r;
+      renderInspector(r, selectedFormIndex(inspectorForms(r), pick));
       $("#inspector").setAttribute("aria-hidden", "false");
       document.body.classList.add("is-modal-open");
-      requestAnimationFrame(() => loadFontGrid(r.c));
     }
     function cpDecimalNote(cpStr) { const n = cpInt(cpStr); return isNaN(n) ? "" : `十进制 ${n}`; }
     function closeInspector() {
@@ -826,7 +865,14 @@
       });
       $("#tbody").addEventListener("click", (e) => {
         const tr = e.target.closest("tr"); if (!tr) return;
-        const r = ROWS.find(x => x.s === Number(tr.dataset.serial)); if (r) openInspector(r);
+        const r = ROWS.find(x => x.s === Number(tr.dataset.serial)); if (!r) return;
+        const target = e.target.closest("[data-inspect-char]");
+        openInspector(r, target ? { c: target.dataset.inspectChar, cp: target.dataset.inspectCp } : null);
+      });
+      $("#inspBody").addEventListener("click", (e) => {
+        const btn = e.target.closest(".insp-form[data-form-index]");
+        if (!btn || !inspectorRow) return;
+        renderInspector(inspectorRow, Number(btn.dataset.formIndex));
       });
       $("#inspClose").addEventListener("click", closeInspector);
       $("#inspector").addEventListener("click", (e) => { if (e.target === $("#inspector")) closeInspector(); });

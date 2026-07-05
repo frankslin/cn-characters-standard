@@ -72,17 +72,33 @@ Webfonts come from `free-fonts` (published as `@free-fonts/*` on unpkg, sliced b
 plus Google Noto SC. `.han` elements use `font-family: var(--han-font), var(--han-fallback)` where
 the fallback chain (WenJin Mincho planes + Jigmo + serif) gives broad coverage for rare glyphs.
 
-**The comparison grid ("各字体字形对比") is loading-order sensitive.** free-fonts `@font-face` uses
-`font-display: fallback`, so before a cell's own slice downloads it renders in the first *available*
-broad fallback (WenJin Mincho) — making every cell look identical / "wrong". This produced repeated
-"字体渲染不对" reports.
+**The comparison grid ("各字体字形对比") is loading-order sensitive.**
 
-Fix (do **not** regress this): `loadFontGrid()` loads each cell's font independently via
-`document.fonts.load()`. Cells start `.is-loading` (dimmed + "· 加载中") and are revealed one-by-one as
-their own font resolves; on resolve the `.fglyph` node is replaced with a clone to force a repaint
-even if the swap window expired. Never go back to a single shared fallback + one-shot repaint, or the
-collapse returns. Labels are `中文名 · English Name` (no coverage annotations); the redundant
-`异体字 · 异体字` is collapsed to just `异体字`.
+The main table `.han` elements intentionally use the broad fallback chain, but the comparison grid
+must **not**. WenJin/Jigmo may already be loaded by the table; if they are present in a grid cell's
+fallback chain, the browser can satisfy the glyph immediately with that fallback and never repaint the
+cell with the newly downloaded primary slice. This makes "downloaded" fonts look like they did not
+render.
+
+Current approach in `loadFontGrid()` / `fontGridHtml()` (keep it this way):
+- Non-system grid cells use only `<primary>, serif`. Do not append `FALLBACK`, WenJin, or Jigmo there.
+- Do not put a quoted font stack into a double-quoted `style="font-family:..."` attribute. Family names
+  like `"LXGW WenKai"` terminate the attribute and break the DOM. Store the stack in `data-font-family`
+  and assign `el.style.fontFamily = el.dataset.fontFamily` after insertion.
+- `document.fonts.load()` may be used only as a fire-and-forget fetch/repaint hint. Do not gate UI
+  visibility on its promise and do not reintroduce a dimmed `is-loading` state.
+- Repaint individual glyph cells after their own load settles, plus timed fallback repaints. The cell
+  should render via normal CSS font selection, not by canvas/image snapshots or manual glyph drawing.
+
+Labels are `中文名 · English Name` (no coverage annotations); the redundant `异体字 · 异体字` is
+collapsed to just `异体字`.
+
+Inspector interaction details:
+- The glyph switcher includes the 规范字 as the first item, followed by the row's 繁体字 and 异体字.
+- Clicking the main table's 规范字 / 繁体字 / 异体字 should open the inspector focused on that exact
+  clicked glyph; clicking elsewhere in the row may default to the 规范字.
+- Switching glyphs inside the inspector must update the header glyph, codepoint metadata, and the font
+  comparison grid together. Do not regress to rendering every row inspector with only `r.c`.
 
 ## Testing
 
@@ -96,9 +112,11 @@ Visual checks via headless Chrome screenshots:
   --screenshot=/tmp/out.png "http://localhost:8137/#q=..."
 ```
 To exercise the inspector, copy `index.html` and inject an auto-open script before `</body>`:
-`openInspector(ROWS.find(r=>r.s===782))`. **Caveat:** headless virtual-time does not reliably flush
-`document.fonts.load` promise callbacks, so the *progressive font reveal* must be confirmed in a real
-browser — headless can leave comparison cells stuck in the dimmed `加载中` state.
+`openInspector(ROWS.find(r=>r.s===782))`. Use a visually distinctive char (e.g. 你 / serial 782) —
+simple glyphs like 干 barely differ between fonts. After touching `fontGridHtml()` or
+`loadFontGrid()`, inspect a glyph cell in a real browser: its computed `font-family` must be the
+primary family plus `serif`, not the broad `FALLBACK`, and the HTML must not contain a truncated
+`style="font-family:"LXGW...` attribute.
 
 ## Conventions
 
