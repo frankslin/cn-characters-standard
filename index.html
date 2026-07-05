@@ -112,9 +112,6 @@
     }
 
     .theme-toggle {
-      position: absolute;
-      top: 16px;
-      right: 16px;
       width: 36px;
       height: 36px;
       display: inline-grid;
@@ -126,10 +123,13 @@
       cursor: pointer;
       font-size: 17px;
       line-height: 1;
+      flex-shrink: 0;
     }
 
     .hero {
-      position: relative;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
       border-radius: 8px;
       padding: 34px 32px;
       background: var(--panel);
@@ -137,6 +137,8 @@
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
     }
+    .hero-left { flex: 1; min-width: 0; }
+    .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
 
     .eyebrow {
       width: fit-content;
@@ -175,7 +177,6 @@
     }
 
     .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .hero-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 20px; }
 
     .search-wrap { position: relative; flex: 1 1 300px; min-width: 220px; }
     .search-wrap input {
@@ -241,14 +242,14 @@
     .result-meta .warn { color: var(--danger); }
 
     .table-wrap {
-      border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 8px; overflow: clip;
       background: var(--panel-solid); box-shadow: 0 10px 30px rgba(51, 35, 20, 0.06);
     }
 
     table { width: 100%; border-collapse: collapse; }
 
     thead th {
-      position: sticky; top: 0; z-index: 3;
+      position: sticky; top: var(--controls-h, 0px); z-index: 3;
       background: var(--card-head);
       backdrop-filter: blur(10px);
       text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.04em;
@@ -373,7 +374,8 @@
 
     @media (max-width: 760px) {
       main { padding: 16px; }
-      .hero { padding: 24px 20px; }
+      .hero { padding: 24px 20px; flex-wrap: wrap; }
+      .hero-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 10px; }
       .col-cp, .col-py, .col-note { display: none; }
       .inspector-head .big { font-size: 54px; }
     }
@@ -382,13 +384,15 @@
 <body>
   <main>
     <header class="hero">
-      <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换深浅色">🌙</button>
-      <h1>
-        <span class="title-kicker">中国国务院 2013 年发布 · 8105 字</span>
-        <span class="title-main">通用规范汉字表</span>
-      </h1>
-      <div class="eyebrow">《通用规范汉字表》· 附表一 规范字与繁体字、异体字对照表</div>
-      <div class="hero-controls">
+      <div class="hero-left">
+        <h1>
+          <span class="title-kicker">中国国务院 2013 年发布 · 8105 字</span>
+          <span class="title-main">通用规范汉字表</span>
+        </h1>
+        <div class="eyebrow">《通用规范汉字表》· 附表一 规范字与繁体字、异体字对照表</div>
+      </div>
+      <div class="hero-right">
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换深浅色">🌙</button>
         <div class="field-group">
           <label for="fontSelect">字体</label>
           <select id="fontSelect" aria-label="选择字体"></select>
@@ -520,10 +524,10 @@
       const out = [];
       for (const r of ROWS) {
         if (out.length >= 10) break;
-        if      (pq.kind === "cp"     && r._cps.has(pq.cp))               out.push(r);
-        else if (pq.kind === "serial" && r.s === pq.serial)               out.push(r);
-        else if (pq.kind === "pinyin" && r._py.some(p => pyRe.test(p)))   out.push(r);
-        else if (pq.kind === "chars"  && pq.chars.some(c => r._chs.has(c))) out.push(r);
+        if      (pq.kind === "cp"           && r._cps.has(pq.cp))                         out.push(r);
+        else if (pq.kind === "serial_or_cp" && (r.s === pq.serial || r._cps.has(pq.cp))) out.push(r);
+        else if (pq.kind === "pinyin"       && r._py.some(p => pyRe.test(p)))             out.push(r);
+        else if (pq.kind === "chars"        && pq.chars.some(c => r._chs.has(c)))         out.push(r);
       }
       return out;
     }
@@ -592,16 +596,16 @@
     const BATCH = 80;
 
     // ---------- search parsing ----------
-    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'serial', serial} | {kind:'pinyin', q} | {kind:'chars', chars:[...]}
+    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'serial_or_cp', serial, cp} | {kind:'pinyin', q} | {kind:'chars', chars:[...]}
     function parseQuery(q) {
       const t = q.trim();
       if (!t) return { kind: "all" };
       let m = /^(?:u\+|0x|\\u)\s*([0-9a-fA-F]{1,6})$/i.exec(t);
       if (m) return { kind: "cp", cp: parseInt(m[1], 16) };
-      // pure decimal: 1-8105 → serial; larger → codepoint
+      // pure decimal: 1-8105 → serial AND also try as hex codepoint; larger → decimal codepoint
       if (/^\d+$/.test(t)) {
         const n = parseInt(t, 10);
-        if (n >= 1 && n <= 8105) return { kind: "serial", serial: n };
+        if (n >= 1 && n <= 8105) return { kind: "serial_or_cp", serial: n, cp: parseInt(t, 16) };
         if (n <= 0x10FFFF) return { kind: "cp", cp: n };
       }
       // pinyin (letters + tone marks + ü/v, no digits) — before hex: CJK codepoints always contain digits
@@ -623,7 +627,7 @@
         if (state.fltVar && !(r.v && r.v.length)) return false;
         if (state.fltNote && !r._note) return false;
         if (pq.kind === "cp") { if (!r._cps.has(pq.cp)) return false; }
-        else if (pq.kind === "serial") { if (r.s !== pq.serial) return false; }
+        else if (pq.kind === "serial_or_cp") { if (r.s !== pq.serial && !r._cps.has(pq.cp)) return false; }
         else if (pq.kind === "pinyin") { if (!r._py.some(p => pyRe.test(p))) return false; }
         else if (pq.kind === "chars") { if (!pq.chars.some(c => r._chs.has(c))) return false; }
         return true;
@@ -638,6 +642,7 @@
       const n = filtered.length;
       let desc = "";
       if (pq.kind === "cp") desc = ` · 匹配码位 ${fmtCp(pq.cp)}（含繁体 / 异体）`;
+      else if (pq.kind === "serial_or_cp") desc = ` · 序号 ${pq.serial} / 码位 ${fmtCp(pq.cp)}`;
       else if (pq.kind === "serial") desc = ` · 序号 ${pq.serial}`;
       else if (pq.kind === "pinyin") desc = ` · 拼音 ${pq.q}`;
       else if (pq.kind === "chars") desc = ` · 匹配字符 ${pq.chars.join(" ")}`;
@@ -938,6 +943,15 @@
     // ---------- boot ----------
     readHash();
     initControls();
+    (() => {
+      const ctrl = $(".controls");
+      const update = () => {
+        const mt = parseFloat(getComputedStyle(ctrl).marginTop) || 0;
+        document.documentElement.style.setProperty("--controls-h", (ctrl.offsetHeight + mt) + "px");
+      };
+      new ResizeObserver(update).observe(ctrl);
+      update();
+    })();
     applyFont();
     applySize();
     applyTheme();
