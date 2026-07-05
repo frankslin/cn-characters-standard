@@ -833,12 +833,11 @@
       $("#fltNote").checked = state.fltNote;
     }
 
-    // Single entry point after any state change.
-    function commit() { applyFilters(); refreshUI(); syncHashDebounced(); }
+    // Single entry point after any state change. Pushes a history entry.
+    function commit() { applyFilters(); refreshUI(); syncHash(true); }
 
     // ---------- URL hash ----------
-    let hashTimer = null;
-    function syncHash() {
+    function syncHash(push = false) {
       const p = new URLSearchParams();
       if (state.query) p.set("q", state.query);
       if (state.level) p.set("lv", state.level);
@@ -847,9 +846,10 @@
       if (state.fltNote) p.set("n", "1");
       if (state.font !== "noto-serif") p.set("f", state.font);
       if (state.theme !== "light") p.set("th", state.theme);
-      history.replaceState(null, "", p.toString() ? "#" + p.toString() : location.pathname);
+      const url = p.toString() ? "#" + p.toString() : location.pathname;
+      if (push) history.pushState(null, "", url);
+      else history.replaceState(null, "", url);
     }
-    function syncHashDebounced() { clearTimeout(hashTimer); hashTimer = setTimeout(syncHash, 300); }
     function readHash() {
       const p = new URLSearchParams(location.hash.slice(1));
       if (p.has("q")) state.query = p.get("q");
@@ -941,12 +941,15 @@
     }
 
     // ---------- boot ----------
-    window.addEventListener("hashchange", () => {
+    // Restore state from URL without adding a new history entry (used for back/forward and direct URL edits).
+    function onNavigation() {
       readHash();
       applyFont(); applySize(); applyTheme();
       $("#search").value = draftQuery;
-      commit();
-    });
+      applyFilters(); refreshUI();
+    }
+    window.addEventListener("hashchange", onNavigation);
+    window.addEventListener("popstate", onNavigation);
     readHash();
     initControls();
     (() => {
