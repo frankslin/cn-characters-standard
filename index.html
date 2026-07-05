@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>通用规范汉字表 · 规范字与繁体字、异体字对照</title>
+  <meta name="description" content="《通用规范汉字表》8105 字在线检索：规范字、繁体字、异体字对照（附表一）与附注，支持按 Unicode 码位或字符检索，可切换中文自由 webfonts。">
+
+  <!-- 中文自由 webfonts（来自 free-fonts，按 unicode-range 切片，仅按需下载） -->
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/wenjin-mincho@1.0.0/wenjin-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/genki-mincho@1.0.0/genki-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/genyo-mincho@1.0.0/genyo-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/black-sugar-plum-candy@1.0.0/black-sugar-plum-candy.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai@1.0.0/lxgw-wenkai.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai-gb@1.0.0/lxgw-wenkai-gb.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/lxgw-wenkai-tc@1.0.0/lxgw-wenkai-tc.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo@1.0.0/jigmo.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo-sc@1.0.0/jigmo-sc.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/jigmo-tc@1.0.0/jigmo-tc.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&amp;family=Noto+Serif+SC:wght@400;500;600&amp;display=swap">
+
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f2e8;
+      --paper: #fffaf1;
+      --paper-soft: #f1e7d8;
+      --panel: rgba(255, 250, 241, 0.88);
+      --panel-solid: #fffaf1;
+      --line: rgba(72, 56, 40, 0.18);
+      --line-strong: rgba(72, 56, 40, 0.32);
+      --text: #211b16;
+      --muted: #766c60;
+      --faint: #a2978a;
+      --accent: #8f3f2b;
+      --accent-2: #4d6d62;
+      --danger: #a8443d;
+      --field: rgba(255, 252, 246, 0.92);
+      --card-head: rgba(247, 239, 226, 0.72);
+      --row: rgba(255, 252, 246, 0.72);
+      --row-alt: rgba(247, 239, 226, 0.42);
+      --button-active-text: #fffaf1;
+      --primary-bg: #2f5147;
+      --primary-border: #2f5147;
+      --shadow: 0 18px 50px rgba(51, 35, 20, 0.12);
+      --han-size: 30px;
+      --han-font: "LXGW WenKai GB";
+      --han-weight: 400;
+      --han-fallback: "WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3", "Jigmo", "Jigmo SC", serif;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #171512;
+      --paper: #211d18;
+      --paper-soft: #2b251e;
+      --panel: rgba(33, 29, 24, 0.88);
+      --panel-solid: #211d18;
+      --line: rgba(232, 218, 197, 0.16);
+      --line-strong: rgba(232, 218, 197, 0.28);
+      --text: #f4eadc;
+      --muted: #b8aa98;
+      --faint: #897b6c;
+      --accent: #d08468;
+      --accent-2: #9fc1b2;
+      --danger: #df8f86;
+      --field: rgba(18, 16, 13, 0.82);
+      --card-head: rgba(18, 16, 13, 0.52);
+      --row: rgba(18, 16, 13, 0.42);
+      --row-alt: rgba(18, 16, 13, 0.24);
+      --button-active-text: #171512;
+      --primary-bg: #c99c79;
+      --primary-border: #c99c79;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(143, 63, 43, 0.10), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--paper-soft));
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body.is-modal-open { overflow: hidden; }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.32;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+      z-index: 0;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 0 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      color: var(--accent);
+      font-family: "Noto Serif SC", serif;
+      font-size: 18px;
+      background: var(--panel);
+    }
+
+    .header-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+    .theme-toggle {
+      min-width: 58px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      border-radius: 8px;
+      padding: 34px 32px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      width: fit-content;
+      margin-bottom: 16px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--accent-2);
+      background: var(--field);
+      font-size: 13px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Noto Serif SC", ui-serif, Georgia, serif;
+      font-weight: 600;
+      line-height: 1.1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1em;
+    }
+
+    .title-kicker { font-size: clamp(16px, 2.4vw, 24px); color: var(--muted); font-weight: 400; }
+    .title-main { font-size: clamp(38px, 6vw, 68px); }
+
+    .sub { max-width: 720px; margin: 18px 0 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
+
+    .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .stat {
+      display: inline-flex; align-items: baseline; gap: 6px;
+      padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+      background: var(--field); font: inherit; font-size: 13px; color: var(--muted);
+      cursor: pointer; transition: border-color .15s, background .15s, color .15s;
+    }
+    .stat:hover { border-color: var(--accent); }
+    .stat b { font-size: 15px; color: var(--text); font-variant-numeric: tabular-nums; }
+    .stat.is-active { background: var(--primary-bg); border-color: var(--primary-border); color: var(--button-active-text); }
+    .stat.is-active b { color: var(--button-active-text); }
+
+    .controls {
+      position: sticky; top: 0; z-index: 6;
+      margin-top: 22px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(51, 35, 20, 0.08);
+    }
+
+    .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .controls-row + .controls-row { margin-top: 10px; }
+
+    .search-wrap { position: relative; flex: 1 1 300px; min-width: 220px; }
+    .search-wrap input {
+      width: 100%; height: 42px;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 40px 8px 14px;
+      background: var(--field); color: var(--text);
+      font: 15px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .search-wrap input:focus { outline: none; border-color: var(--accent); }
+    .search-clear {
+      position: absolute; right: 6px; top: 6px;
+      width: 30px; height: 30px; border: 0; border-radius: 6px;
+      background: transparent; color: var(--muted); cursor: pointer; font-size: 18px;
+    }
+    .search-clear:hover { color: var(--text); }
+
+    label { color: var(--muted); font-size: 13px; }
+
+    .field-group { display: inline-flex; align-items: center; gap: 8px; }
+
+    select, .btn {
+      min-height: 40px;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 6px 12px;
+      background: var(--field); color: var(--text);
+      font: inherit; font-size: 14px; cursor: pointer;
+    }
+    select:focus, .btn:focus-visible { outline: none; border-color: var(--accent); }
+
+    .chips { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); }
+    .chip {
+      min-height: 30px; padding: 4px 12px;
+      border: 0; border-radius: 6px; background: transparent; color: var(--muted);
+      cursor: pointer; font: inherit; font-size: 13px;
+    }
+    .chip[aria-pressed="true"] { background: var(--primary-bg); color: var(--button-active-text); }
+
+    .switch {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; min-height: 40px;
+      background: var(--field); color: var(--text); cursor: pointer; font-size: 13px;
+    }
+    .switch input { accent-color: var(--accent); }
+
+    .slider-wrap { display: inline-flex; align-items: center; gap: 8px; min-width: 160px; }
+    input[type="range"] { accent-color: var(--accent); }
+
+    .result-meta { margin: 14px 2px 8px; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .result-meta .warn { color: var(--danger); }
+
+    .table-wrap {
+      border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+      background: var(--panel-solid); box-shadow: 0 10px 30px rgba(51, 35, 20, 0.06);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead th {
+      position: sticky; top: 0; z-index: 3;
+      background: var(--card-head);
+      backdrop-filter: blur(10px);
+      text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.04em;
+      color: var(--muted);
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line-strong);
+      white-space: nowrap;
+    }
+
+    tbody tr { border-bottom: 1px solid var(--line); cursor: pointer; }
+    tbody tr:nth-child(even) { background: var(--row-alt); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    td { padding: 9px 12px; vertical-align: middle; }
+
+    .col-serial { width: 68px; color: var(--faint); font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+    .col-cp { width: 108px; color: var(--muted); font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+    .col-gc { width: 74px; }
+    .col-note { width: 132px; }
+
+    .han {
+      font-family: var(--han-font), var(--han-fallback);
+      font-weight: var(--han-weight);
+    }
+    .gc {
+      font-size: var(--han-size); line-height: 1.1;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .lv-badge {
+      font-size: 10px; font-weight: 600; color: var(--button-active-text);
+      background: var(--accent-2); border-radius: 4px; padding: 1px 5px; line-height: 1.5;
+      vertical-align: middle;
+    }
+    .lv-badge[data-lv="1"] { background: #4d6d62; }
+    .lv-badge[data-lv="2"] { background: #8f6a3f; }
+    .lv-badge[data-lv="3"] { background: #8f3f2b; }
+
+    .forms { display: flex; flex-wrap: wrap; gap: 8px; }
+    .form {
+      display: inline-flex; flex-direction: column; align-items: center;
+      padding: 3px 8px 4px; border: 1px solid var(--line); border-radius: 7px;
+      background: var(--field); min-width: 40px;
+      position: relative;
+    }
+    .form .fchar { font-size: calc(var(--han-size) * 0.86); line-height: 1.15; }
+    .form .fcp { font: 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--faint); }
+    .form.is-variant { border-style: dashed; }
+    .fn-badge {
+      position: absolute; top: -7px; right: -7px;
+      font-size: 9px; font-weight: 700; line-height: 1;
+      padding: 2px 4px; border-radius: 999px;
+      color: var(--button-active-text);
+    }
+    .fn-badge[data-cat="繁体另做规范字"] { background: #8f3f2b; }
+    .fn-badge[data-cat="异体另做规范字"] { background: #8f6a3f; }
+    .fn-badge[data-cat="异体字"] { background: #4d6d62; }
+
+    .cell-empty { color: var(--faint); font-size: 13px; }
+
+    .note-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .note-tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+
+    #sentinel { height: 1px; }
+    .loading { padding: 18px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    .legend { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .legend section {
+      border: 1px solid var(--line); border-radius: 8px; padding: 16px;
+      background: var(--panel); backdrop-filter: blur(12px);
+    }
+    .legend h2 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+    .legend p { margin: 6px 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+    .legend .han-inline { font-family: var(--han-font), var(--han-fallback); }
+    .footer { margin: 28px 2px 12px; color: var(--faint); font-size: 12px; line-height: 1.8; }
+    .footer a { color: var(--accent-2); }
+
+    /* Inspector modal */
+    .inspector {
+      position: fixed; inset: 0; z-index: 30; display: none;
+      align-items: center; justify-content: center; padding: 24px;
+      background: rgba(20, 16, 12, 0.46); backdrop-filter: blur(12px);
+    }
+    .inspector[aria-hidden="false"] { display: flex; }
+    .inspector-panel {
+      width: min(920px, 100%); max-height: calc(100vh - 48px);
+      display: flex; flex-direction: column; overflow: hidden;
+      border: 1px solid var(--line-strong); border-radius: 10px;
+      background: var(--panel-solid); box-shadow: 0 24px 80px rgba(20, 16, 12, 0.3);
+    }
+    .inspector-head {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+      padding: 18px 20px; border-bottom: 1px solid var(--line); background: var(--card-head);
+    }
+    .inspector-head .big {
+      font-family: var(--han-font), var(--han-fallback);
+      font-size: 72px; line-height: 1; margin-right: 4px;
+    }
+    .inspector-title-row { display: flex; align-items: center; gap: 14px; }
+    .inspector-meta { color: var(--muted); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 6px; }
+    .inspector-close { width: 34px; height: 34px; flex: 0 0 auto; padding: 0; display: grid; place-items: center; font-size: 20px; line-height: 1; border: 1px solid var(--line); border-radius: 8px; background: var(--field); color: var(--text); cursor: pointer; }
+    .inspector-body { padding: 18px 20px; overflow: auto; }
+    .insp-section { margin-bottom: 20px; }
+    .insp-section h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .insp-forms { display: flex; flex-wrap: wrap; gap: 10px; }
+    .insp-form {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); position: relative;
+    }
+    .insp-form.is-variant { border-style: dashed; }
+    .insp-form .c { font-family: var(--han-font), var(--han-fallback); font-size: 46px; line-height: 1.1; }
+    .insp-form .cp { font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--faint); }
+    .insp-form .fn { font-size: 11px; color: var(--accent); }
+    .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .font-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); }
+    .font-cell .fname { padding: 6px 9px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .font-cell .fglyph { display: grid; place-items: center; min-height: 96px; font-size: 56px; line-height: 1; padding: 8px; }
+
+    @media (max-width: 760px) {
+      main { padding: 16px; }
+      .hero { padding: 24px 20px; }
+      .col-cp, .col-note { display: none; }
+      .inspector-head .big { font-size: 54px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="topbar">
+      <div class="brand"><span class="brand-mark">规</span><span>通用规范汉字表 · 检索</span></div>
+      <div class="header-controls">
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换深浅色">深色</button>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="eyebrow">《通用规范汉字表》· 附表一 规范字与繁体字、异体字对照表</div>
+      <h1>
+        <span class="title-kicker">中国国务院 2013 年发布 · 8105 字</span>
+        <span class="title-main">通用规范汉字表</span>
+      </h1>
+      <p class="sub">在线检索 8105 个规范字，并对照其<b>繁体字</b>与<b>异体字</b>（源自附表一）。输入一个字符或它的 Unicode 码位即可精确定位；不输入时向下滚动浏览全表。字形可切换多款中文自由 webfonts。</p>
+      <div class="stats" id="stats"></div>
+    </header>
+
+    <div class="controls">
+      <div class="controls-row">
+        <div class="search-wrap">
+          <input id="search" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="检索：字符（如 干）或码位（如 U+5E72 / 5e72 / 24178）">
+          <button type="button" id="searchClear" class="search-clear" aria-label="清除">×</button>
+        </div>
+        <div class="field-group">
+          <label for="fontSelect">字体</label>
+          <select id="fontSelect" aria-label="选择字体"></select>
+        </div>
+        <div class="slider-wrap">
+          <label for="sizeRange">字号</label>
+          <input id="sizeRange" type="range" min="22" max="52" value="30" aria-label="字号">
+        </div>
+      </div>
+      <div class="controls-row">
+        <div class="chips" role="group" aria-label="字级筛选">
+          <button class="chip" data-lv="0" aria-pressed="true">全部</button>
+          <button class="chip" data-lv="1" aria-pressed="false">一级</button>
+          <button class="chip" data-lv="2" aria-pressed="false">二级</button>
+          <button class="chip" data-lv="3" aria-pressed="false">三级</button>
+        </div>
+        <label class="switch"><input type="checkbox" id="fltTrad">仅含繁体对应</label>
+        <label class="switch"><input type="checkbox" id="fltVar">仅含异体字</label>
+        <label class="switch"><input type="checkbox" id="fltNote">仅含附注</label>
+      </div>
+    </div>
+
+    <div class="result-meta">
+      <span id="resultCount"></span>
+      <span id="resultHint"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-serial">序号</th>
+            <th class="col-gc">规范字</th>
+            <th class="col-cp">码位</th>
+            <th>繁体字</th>
+            <th>异体字</th>
+            <th class="col-note">附注</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="sentinel"></div>
+      <div class="loading" id="loading" hidden>加载更多…</div>
+    </div>
+
+    <div class="legend">
+      <section>
+        <h2>字级划分</h2>
+        <p><span class="lv-badge" data-lv="1">一级</span> 常用字 3500 字（序号 1–3500）。</p>
+        <p><span class="lv-badge" data-lv="2">二级</span> 次常用字 3000 字（序号 3501–6500）。</p>
+        <p><span class="lv-badge" data-lv="3">三级</span> 专门领域用字 1605 字（序号 6501–8105）。</p>
+      </section>
+      <section>
+        <h2>繁体字与异体字</h2>
+        <p>表中<b>实线框</b>为对应的<span class="han-inline">繁体字</span>，同一规范字可有多个不同来源的繁体（如<span class="han-inline">干</span>→<span class="han-inline">乾/幹</span>）。</p>
+        <p><b>虚线框</b>为<span class="han-inline">异体字</span>，一般不再作为规范字使用。</p>
+      </section>
+      <section>
+        <h2>附注（评注）</h2>
+        <p><span class="swatch" style="background:#8f3f2b"></span><b>繁体另做规范字</b>：该繁体字本身也单独收作规范字。</p>
+        <p><span class="swatch" style="background:#8f6a3f"></span><b>异体另做规范字</b>：该异体字本身也单独收作规范字。</p>
+        <p><span class="swatch" style="background:#4d6d62"></span><b>异体字</b>：附有专门说明的异体字。附注全文详见官方 PDF。</p>
+      </section>
+    </div>
+
+    <p class="footer">
+      数据来源：《通用规范汉字表》（2013）字表与附表一。字体由 <a href="https://free-fonts.digitalhumanities.dev/" target="_blank" rel="noopener">free-fonts</a> 提供（文津明体、源起/源样明体、霞鹜文楷、Jigmo、思源等），按 <code>unicode-range</code> 切片、按需下载。三级字与异体字多为罕用字，若所选字体缺字会自动回退到覆盖更广的字体。
+    </p>
+  </main>
+
+  <div class="inspector" id="inspector" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="inspTitle">
+    <div class="inspector-panel">
+      <div class="inspector-head">
+        <div>
+          <div class="inspector-title-row">
+            <span class="big han" id="inspBig"></span>
+            <div>
+              <div id="inspTitle" style="font-size:16px;font-weight:600"></div>
+              <div class="inspector-meta" id="inspMeta"></div>
+            </div>
+          </div>
+        </div>
+        <button class="inspector-close" id="inspClose" aria-label="关闭">×</button>
+      </div>
+      <div class="inspector-body" id="inspBody"></div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script>
+    const DATA = window.GCTABLE;
+    const ROWS = DATA.rows;
+
+    const FALLBACK = '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3", "Jigmo", "Jigmo SC", serif';
+    const FONTS = [
+      { id: "lxgw-gb",     label: "霞鹜文楷 GB（默认）", family: '"LXGW WenKai GB"', weight: 400 },
+      { id: "wenjin",      label: "文津明体（覆盖广）", family: '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3"', weight: 400 },
+      { id: "genki",       label: "源起明体 TC", family: '"GenKiMin2TC"', weight: 400 },
+      { id: "genyo",       label: "源样明体 TC", family: '"GenYoMin2TC"', weight: 400 },
+      { id: "lxgw",        label: "霞鹜文楷", family: '"LXGW WenKai"', weight: 400 },
+      { id: "lxgw-tc",     label: "霞鹜文楷 TC", family: '"LXGW WenKai TC"', weight: 400 },
+      { id: "jigmo",       label: "Jigmo 字云（覆盖极广）", family: '"Jigmo", "Jigmo SC"', weight: 400 },
+      { id: "noto-serif",  label: "思源宋体 SC", family: '"Noto Serif SC"', weight: 400 },
+      { id: "noto-sans",   label: "思源黑体 SC", family: '"Noto Sans SC"', weight: 400 },
+      { id: "black-sugar", label: "黑糖话梅", family: '"Black Sugar Plum Candy"', weight: 700 },
+      { id: "sys-serif",   label: "系统宋体", family: "serif", weight: 400 },
+      { id: "sys-sans",    label: "系统黑体", family: "sans-serif", weight: 400 },
+    ];
+
+    // ---------- helpers ----------
+    const $ = (sel) => document.querySelector(sel);
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+    function cpInt(cpStr) { const m = /([0-9a-fA-F]+)/.exec(cpStr || ""); return m ? parseInt(m[1], 16) : NaN; }
+    function fmtCp(n) { return "U+" + n.toString(16).toUpperCase().padStart(4, "0"); }
+
+    // Precompute a search index: for each row, set of codepoint ints + set of chars
+    ROWS.forEach(r => {
+      const cps = new Set();
+      const chs = new Set();
+      cps.add(cpInt(r.cp)); chs.add(r.c);
+      (r.t || []).forEach(f => { cps.add(cpInt(f.cp)); chs.add(f.c); });
+      (r.v || []).forEach(f => { cps.add(cpInt(f.cp)); chs.add(f.c); });
+      r._cps = cps; r._chs = chs;
+      r._note = !!((r.t || []).some(f => f.n) || (r.v || []).some(f => f.n));
+    });
+
+    // ---------- state ----------
+    const state = {
+      query: "",
+      level: 0,
+      fltTrad: false,
+      fltVar: false,
+      fltNote: false,
+      font: "lxgw-gb",
+      size: 30,
+      theme: "light",
+    };
+
+    let filtered = ROWS;
+    let rendered = 0;
+    const BATCH = 80;
+
+    // ---------- search parsing ----------
+    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'chars', chars:[...]}
+    function parseQuery(q) {
+      const t = q.trim();
+      if (!t) return { kind: "all" };
+      let m = /^(?:u\+|0x|\\u)\s*([0-9a-fA-F]{1,6})$/i.exec(t);
+      if (m) return { kind: "cp", cp: parseInt(m[1], 16) };
+      // pure decimal (3+ digits) -> decimal codepoint
+      if (/^\d{3,7}$/.test(t)) { const n = parseInt(t, 10); if (n <= 0x10FFFF) return { kind: "cp", cp: n }; }
+      // pure hex 2-6 digits -> hex codepoint
+      if (/^[0-9a-fA-F]{2,6}$/.test(t) && /[a-fA-F]/.test(t)) return { kind: "cp", cp: parseInt(t, 16) };
+      if (/^[0-9a-fA-F]{4,6}$/.test(t)) return { kind: "cp", cp: parseInt(t, 16) };
+      // otherwise treat as characters
+      const chars = Array.from(t).filter(c => !/\s/.test(c));
+      return chars.length ? { kind: "chars", chars } : { kind: "all" };
+    }
+
+    function applyFilters() {
+      const pq = parseQuery(state.query);
+      filtered = ROWS.filter(r => {
+        if (state.level && r.lv !== state.level) return false;
+        if (state.fltTrad && !(r.t && r.t.length)) return false;
+        if (state.fltVar && !(r.v && r.v.length)) return false;
+        if (state.fltNote && !r._note) return false;
+        if (pq.kind === "cp") { if (!r._cps.has(pq.cp)) return false; }
+        else if (pq.kind === "chars") { if (!pq.chars.some(c => r._chs.has(c))) return false; }
+        return true;
+      });
+      rendered = 0;
+      $("#tbody").innerHTML = "";
+      renderMore();
+      updateMeta(pq);
+    }
+
+    function updateMeta(pq) {
+      const n = filtered.length;
+      let desc = "";
+      if (pq.kind === "cp") desc = ` · 匹配码位 ${fmtCp(pq.cp)}（含繁体 / 异体）`;
+      else if (pq.kind === "chars") desc = ` · 匹配字符 ${pq.chars.join(" ")}`;
+      $("#resultCount").innerHTML = `共 <b>${n.toLocaleString()}</b> 条${desc}`;
+      $("#resultHint").innerHTML = n === 0
+        ? '<span class="warn">未找到匹配项，试试其他字符或码位。</span>'
+        : (state.query ? "" : "向下滚动浏览全表");
+    }
+
+    // ---------- rendering ----------
+    function formHtml(f, variant) {
+      const cat = f.n ? f.n.cat : "";
+      const badge = f.n ? `<span class="fn-badge" data-cat="${esc(cat)}" title="${esc(cat)}（${esc(f.n.f)}）">注</span>` : "";
+      return `<span class="form${variant ? " is-variant" : ""}" title="${esc(f.c)} ${esc(f.cp)}${cat ? " · " + esc(cat) : ""}">
+        ${badge}<span class="fchar han">${esc(f.c)}</span><span class="fcp">${esc(f.cp)}</span></span>`;
+    }
+
+    function rowHtml(r) {
+      const trad = (r.t && r.t.length) ? `<div class="forms">${r.t.map(f => formHtml(f, false)).join("")}</div>` : '<span class="cell-empty">—</span>';
+      const vars = (r.v && r.v.length) ? `<div class="forms">${r.v.map(f => formHtml(f, true)).join("")}</div>` : '<span class="cell-empty">—</span>';
+      const notes = [];
+      (r.t || []).concat(r.v || []).forEach(f => { if (f.n) notes.push(`<span class="note-tag">${esc(f.c)}·${esc(f.n.cat)}</span>`); });
+      const noteCell = notes.length ? `<div class="note-tags">${notes.join("")}</div>` : '<span class="cell-empty">—</span>';
+      return `<tr data-serial="${r.s}">
+        <td class="col-serial">${r.s}</td>
+        <td class="col-gc"><span class="gc"><span class="han">${esc(r.c)}</span><span class="lv-badge" data-lv="${r.lv}">${["一","二","三"][r.lv-1]}</span></span></td>
+        <td class="col-cp">${esc(r.cp)}</td>
+        <td>${trad}</td>
+        <td>${vars}</td>
+        <td class="col-note">${noteCell}</td>
+      </tr>`;
+    }
+
+    function renderMore() {
+      if (rendered >= filtered.length) { $("#loading").hidden = true; return; }
+      const slice = filtered.slice(rendered, rendered + BATCH);
+      $("#tbody").insertAdjacentHTML("beforeend", slice.map(rowHtml).join(""));
+      rendered += slice.length;
+      $("#loading").hidden = rendered >= filtered.length;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) renderMore();
+    }, { rootMargin: "600px" });
+    io.observe($("#sentinel"));
+
+    // ---------- inspector ----------
+    // For the comparison grid, drop the shared broad fallback so an unloaded
+    // font degrades to a plain system font rather than collapsing onto WenJin/Jigmo.
+    function fontGridHtml(ch) {
+      return FONTS.map(ft => {
+        const generic = /serif/.test(ft.id) ? ft.family : ft.family + ", " + (/sans|sugar/.test(ft.id) ? "sans-serif" : "serif");
+        return `<div class="font-cell"><div class="fname">${esc(ft.label)}</div>
+          <div class="fglyph" style="font-family:${generic};font-weight:${ft.weight}">${esc(ch)}</div></div>`;
+      }).join("");
+    }
+
+    // Force the exact webfont slices for these characters to download, then
+    // re-render so every cell paints with its intended (now-loaded) font.
+    function ensureFonts(chars, done) {
+      if (!document.fonts || !document.fonts.load) { done(); return; }
+      const jobs = [];
+      FONTS.forEach(ft => {
+        if (/^sys-/.test(ft.id)) return;
+        ft.family.split(",").forEach(fam => {
+          fam = fam.trim();
+          chars.forEach(ch => { try { jobs.push(document.fonts.load(`${ft.weight} 40px ${fam}`, ch)); } catch (e) {} });
+        });
+      });
+      Promise.allSettled(jobs).then(done);
+    }
+
+    function openInspector(r) {
+      $("#inspBig").textContent = r.c;
+      $("#inspTitle").textContent = `规范字 ${r.c} · 序号 ${r.s} · ${["一","二","三"][r.lv-1]}级`;
+      $("#inspMeta").textContent = `${r.cp} · ${cpDecimalNote(r.cp)}`;
+      const parts = [];
+      const allForms = (r.t || []).map(f => ({ f, v: false })).concat((r.v || []).map(f => ({ f, v: true })));
+      if (allForms.length) {
+        parts.push(`<div class="insp-section"><h3>繁体字 / 异体字对照</h3><div class="insp-forms">
+          ${allForms.map(({ f, v }) => `<div class="insp-form${v ? " is-variant" : ""}">
+            <span class="c">${esc(f.c)}</span><span class="cp">${esc(f.cp)}</span>
+            <span class="fn">${v ? "异体字" : "繁体字"}${f.n ? " · " + esc(f.n.cat) : ""}</span>
+          </div>`).join("")}</div></div>`);
+      } else {
+        parts.push(`<div class="insp-section"><h3>繁体字 / 异体字对照</h3><p style="color:var(--muted);font-size:13px">该字无繁体、异体对应（不在附表一中）。</p></div>`);
+      }
+      parts.push(`<div class="insp-section"><h3>各字体字形对比</h3><div class="font-grid" id="fontGrid">${fontGridHtml(r.c)}</div></div>`);
+      $("#inspBody").innerHTML = parts.join("");
+      $("#inspector").setAttribute("aria-hidden", "false");
+      document.body.classList.add("is-modal-open");
+      // Also warm the currently selected table font for the form glyphs.
+      ensureFonts([r.c], () => {
+        const grid = $("#fontGrid");
+        if (grid) grid.innerHTML = fontGridHtml(r.c); // repaint with loaded fonts
+      });
+    }
+    function cpDecimalNote(cpStr) { const n = cpInt(cpStr); return isNaN(n) ? "" : `十进制 ${n}`; }
+    function closeInspector() {
+      $("#inspector").setAttribute("aria-hidden", "true");
+      document.body.classList.remove("is-modal-open");
+    }
+
+    // ---------- font / theme / size ----------
+    function applyFont() {
+      const ft = FONTS.find(f => f.id === state.font) || FONTS[0];
+      document.documentElement.style.setProperty("--han-font", ft.family);
+      document.documentElement.style.setProperty("--han-weight", ft.weight);
+    }
+    function applySize() { document.documentElement.style.setProperty("--han-size", state.size + "px"); }
+    function applyTheme() {
+      document.documentElement.dataset.theme = state.theme;
+      const b = $("#themeToggle");
+      b.textContent = state.theme === "dark" ? "浅色" : "深色";
+    }
+
+    // ---------- stats ----------
+    function renderStats() {
+      const total = ROWS.length;
+      const lv = [0, 0, 0]; let hasT = 0, hasV = 0;
+      ROWS.forEach(r => { lv[r.lv - 1]++; if (r.t && r.t.length) hasT++; if (r.v && r.v.length) hasV++; });
+      $("#stats").innerHTML = [
+        ["all", "规范字总数", total], ["lv1", "一级", lv[0]], ["lv2", "二级", lv[1]],
+        ["lv3", "三级", lv[2]], ["trad", "有繁体对应", hasT], ["var", "有异体字", hasV],
+      ].map(([key, k, v]) => `<button type="button" class="stat" data-key="${key}">${k}<b>${v.toLocaleString()}</b></button>`).join("");
+    }
+
+    // Reflect current state onto every control widget (keeps stats <-> filters in sync).
+    function refreshUI() {
+      $("#search").value = state.query;
+      $("#fontSelect").value = state.font;
+      $("#sizeRange").value = state.size;
+      $("#fltTrad").checked = state.fltTrad;
+      $("#fltVar").checked = state.fltVar;
+      $("#fltNote").checked = state.fltNote;
+      document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(Number(c.dataset.lv) === state.level)));
+      const isAll = state.level === 0 && !state.fltTrad && !state.fltVar && !state.fltNote && !state.query.trim();
+      const active = { all: isAll, lv1: state.level === 1, lv2: state.level === 2, lv3: state.level === 3, trad: state.fltTrad, var: state.fltVar };
+      document.querySelectorAll(".stat").forEach(s => s.classList.toggle("is-active", !!active[s.dataset.key]));
+    }
+
+    // Single entry point after any state change.
+    function commit() { applyFilters(); refreshUI(); syncHashDebounced(); }
+
+    // ---------- URL hash ----------
+    let hashTimer = null;
+    function syncHash() {
+      const p = new URLSearchParams();
+      if (state.query) p.set("q", state.query);
+      if (state.level) p.set("lv", state.level);
+      if (state.fltTrad) p.set("t", "1");
+      if (state.fltVar) p.set("v", "1");
+      if (state.fltNote) p.set("n", "1");
+      if (state.font !== "lxgw-gb") p.set("f", state.font);
+      if (state.theme !== "light") p.set("th", state.theme);
+      history.replaceState(null, "", p.toString() ? "#" + p.toString() : location.pathname);
+    }
+    function syncHashDebounced() { clearTimeout(hashTimer); hashTimer = setTimeout(syncHash, 300); }
+    function readHash() {
+      const p = new URLSearchParams(location.hash.slice(1));
+      if (p.has("q")) state.query = p.get("q");
+      if (p.has("lv")) state.level = Number(p.get("lv")) || 0;
+      state.fltTrad = p.get("t") === "1";
+      state.fltVar = p.get("v") === "1";
+      state.fltNote = p.get("n") === "1";
+      if (p.has("f") && FONTS.some(f => f.id === p.get("f"))) state.font = p.get("f");
+      if (p.get("th") === "dark") state.theme = "dark";
+    }
+
+    // ---------- wire up ----------
+    function initControls() {
+      $("#fontSelect").innerHTML = FONTS.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join("");
+      refreshUI();
+
+      let searchTimer = null;
+      $("#search").addEventListener("input", (e) => {
+        state.query = e.target.value;
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(commit, 130);
+      });
+      $("#searchClear").addEventListener("click", () => {
+        state.query = ""; commit(); $("#search").focus();
+      });
+      $("#fontSelect").addEventListener("change", (e) => { state.font = e.target.value; applyFont(); syncHash(); });
+      $("#sizeRange").addEventListener("input", (e) => { state.size = Number(e.target.value); applySize(); });
+      document.querySelectorAll(".chip").forEach(chip => {
+        chip.addEventListener("click", () => { state.level = Number(chip.dataset.lv); commit(); });
+      });
+      ["fltTrad", "fltVar", "fltNote"].forEach(id => {
+        $("#" + id).addEventListener("change", (e) => { state[id] = e.target.checked; commit(); });
+      });
+      // Top stat chips drive the same filters, and stay linked to the controls below.
+      $("#stats").addEventListener("click", (e) => {
+        const btn = e.target.closest(".stat"); if (!btn) return;
+        const key = btn.dataset.key;
+        if (key === "all") { state.level = 0; state.fltTrad = state.fltVar = state.fltNote = false; state.query = ""; }
+        else if (key === "lv1" || key === "lv2" || key === "lv3") {
+          const n = Number(key.slice(2)); state.level = state.level === n ? 0 : n;
+        }
+        else if (key === "trad") state.fltTrad = !state.fltTrad;
+        else if (key === "var") state.fltVar = !state.fltVar;
+        commit();
+      });
+      $("#themeToggle").addEventListener("click", () => {
+        state.theme = state.theme === "dark" ? "light" : "dark"; applyTheme(); syncHash();
+      });
+      $("#tbody").addEventListener("click", (e) => {
+        const tr = e.target.closest("tr"); if (!tr) return;
+        const r = ROWS.find(x => x.s === Number(tr.dataset.serial)); if (r) openInspector(r);
+      });
+      $("#inspClose").addEventListener("click", closeInspector);
+      $("#inspector").addEventListener("click", (e) => { if (e.target === $("#inspector")) closeInspector(); });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && $("#inspector").getAttribute("aria-hidden") === "false") closeInspector();
+        if (e.key === "/" && document.activeElement !== $("#search")) { e.preventDefault(); $("#search").focus(); }
+      });
+    }
+
+    // ---------- boot ----------
+    readHash();
+    renderStats();
+    initControls();
+    applyFont();
+    applySize();
+    applyTheme();
+    applyFilters();
+  </script>
+</body>
+</html>
