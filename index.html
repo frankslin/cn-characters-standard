@@ -175,7 +175,7 @@
     }
 
     .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .controls-row + .controls-row { margin-top: 10px; }
+    .hero-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 20px; }
 
     .search-wrap { position: relative; flex: 1 1 300px; min-width: 220px; }
     .search-wrap input {
@@ -192,6 +192,24 @@
       background: transparent; color: var(--muted); cursor: pointer; font-size: 18px;
     }
     .search-clear:hover { color: var(--text); }
+
+    .ac-list {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--panel-solid); border: 1px solid var(--line);
+      border-radius: 8px; box-shadow: 0 8px 24px rgba(51,35,20,.14);
+      z-index: 200; overflow: hidden;
+    }
+    .ac-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 14px; cursor: pointer; border-bottom: 1px solid var(--line);
+    }
+    .ac-item:last-child { border-bottom: 0; }
+    .ac-item:hover, .ac-item.is-active { background: var(--row-alt); }
+    .ac-char { font-family: var(--han-font), var(--han-fallback); font-size: 22px; min-width: 28px; line-height: 1.2; }
+    .ac-py { color: var(--muted); font-size: 13px; flex: 1; }
+    .ac-serial { color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+    .inspector-py { margin-top: 4px; }
 
     label { color: var(--muted); font-size: 13px; }
 
@@ -370,15 +388,7 @@
         <span class="title-main">通用规范汉字表</span>
       </h1>
       <div class="eyebrow">《通用规范汉字表》· 附表一 规范字与繁体字、异体字对照表</div>
-    </header>
-
-    <div class="controls">
-      <div class="controls-row">
-        <div class="search-wrap">
-          <input id="search" type="search" autocomplete="off" spellcheck="false"
-                 placeholder="检索：字符（干）、拼音（gan / gān）、码位（U+5E72）或序号（1–8105）">
-          <button type="button" id="searchClear" class="search-clear" aria-label="清除">×</button>
-        </div>
+      <div class="hero-controls">
         <div class="field-group">
           <label for="fontSelect">字体</label>
           <select id="fontSelect" aria-label="选择字体"></select>
@@ -388,7 +398,16 @@
           <input id="sizeRange" type="range" min="22" max="52" value="30" aria-label="字号">
         </div>
       </div>
+    </header>
+
+    <div class="controls">
       <div class="controls-row">
+        <div class="search-wrap">
+          <input id="search" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="检索：字符（干）、拼音（gan / gān）、码位（U+5E72）或序号（1–8105）">
+          <button type="button" id="searchClear" class="search-clear" aria-label="清除">×</button>
+          <div id="ac" class="ac-list" hidden role="listbox"></div>
+        </div>
         <label class="switch"><input type="checkbox" id="fltTrad">含对应繁体</label>
         <label class="switch"><input type="checkbox" id="fltVar">含异体字</label>
         <label class="switch"><input type="checkbox" id="fltNote">含附注</label>
@@ -454,6 +473,7 @@
             <div>
               <div id="inspTitle" style="font-size:16px;font-weight:600"></div>
               <div class="inspector-meta" id="inspMeta"></div>
+              <div class="inspector-py" id="inspPy"></div>
             </div>
           </div>
         </div>
@@ -490,6 +510,50 @@
     function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
     function cpInt(cpStr) { const m = /([0-9a-fA-F]+)/.exec(cpStr || ""); return m ? parseInt(m[1], 16) : NaN; }
     function fmtCp(n) { return "U+" + n.toString(16).toUpperCase().padStart(4, "0"); }
+    // ---------- autocomplete ----------
+    let acIdx = -1, acCandidates = [];
+
+    function getCandidates(q) {
+      if (!q.trim()) return [];
+      const pq = parseQuery(q);
+      const pyRe = pq.kind === "pinyin" ? pinyinRegex(pq.q) : null;
+      const out = [];
+      for (const r of ROWS) {
+        if (out.length >= 10) break;
+        if      (pq.kind === "cp"     && r._cps.has(pq.cp))               out.push(r);
+        else if (pq.kind === "serial" && r.s === pq.serial)               out.push(r);
+        else if (pq.kind === "pinyin" && r._py.some(p => pyRe.test(p)))   out.push(r);
+        else if (pq.kind === "chars"  && pq.chars.some(c => r._chs.has(c))) out.push(r);
+      }
+      return out;
+    }
+
+    function showAc(q) {
+      const el = $("#ac");
+      acCandidates = getCandidates(q);
+      acIdx = -1;
+      if (!acCandidates.length) { el.hidden = true; return; }
+      el.innerHTML = acCandidates.map((r, i) =>
+        `<div class="ac-item" data-idx="${i}" role="option">
+          <span class="ac-char">${esc(r.c)}</span>
+          <span class="ac-py">${esc(r._py.slice(0, 3).join("  "))}</span>
+          <span class="ac-serial">#${r.s}</span>
+        </div>`
+      ).join("");
+      el.hidden = false;
+    }
+
+    function closeAc() { $("#ac").hidden = true; acIdx = -1; acCandidates = []; }
+
+    function highlightAc(idx) {
+      document.querySelectorAll(".ac-item").forEach((el, i) => el.classList.toggle("is-active", i === idx));
+    }
+
+    function selectAc(r) {
+      draftQuery = r.c; state.query = r.c;
+      closeAc(); commit();
+    }
+
     // Build a regex that matches a pinyin reading with or without tones.
     // Plain vowels expand to all tonal variants; v is treated as ü.
     function pinyinRegex(q) {
@@ -716,6 +780,8 @@
       $("#inspBig").textContent = selected.c;
       $("#inspTitle").textContent = `${selected.label} ${selected.c} · 序号 ${r.s} · ${["一","二","三"][r.lv-1]}级`;
       $("#inspMeta").textContent = `${selected.cp} · ${cpDecimalNote(selected.cp)}`;
+      const py = (window.PINYIN && window.PINYIN[selected.c]) || [];
+      $("#inspPy").innerHTML = py.map(p => `<span class="py">${esc(p)}</span>`).join("");
       $("#inspBody").innerHTML = [
         `<div class="insp-section"><h3>字形切换</h3><div class="insp-forms">
           ${forms.map((f, i) => `<button type="button" class="insp-form${f.variant ? " is-variant" : ""}${i === selectedIndex ? " is-active" : ""}" data-form-index="${i}" aria-pressed="${i === selectedIndex}">
@@ -804,12 +870,37 @@
 
       $("#search").addEventListener("input", (e) => {
         draftQuery = e.target.value;
+        showAc(draftQuery);
       });
       $("#search").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") { e.preventDefault(); commitSearch(); }
+        if ($("#ac").hidden) {
+          if (e.key === "Enter") { e.preventDefault(); commitSearch(); }
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          acIdx = Math.min(acIdx + 1, acCandidates.length - 1);
+          highlightAc(acIdx);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          acIdx = Math.max(acIdx - 1, -1);
+          highlightAc(acIdx);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (acIdx >= 0 && acCandidates[acIdx]) selectAc(acCandidates[acIdx]);
+          else { closeAc(); commitSearch(); }
+        } else if (e.key === "Escape") {
+          closeAc();
+        }
+      });
+      $("#search").addEventListener("blur", () => setTimeout(closeAc, 150));
+      $("#ac").addEventListener("click", (e) => {
+        const item = e.target.closest(".ac-item");
+        if (!item) return;
+        selectAc(acCandidates[Number(item.dataset.idx)]);
       });
       $("#searchClear").addEventListener("click", () => {
-        draftQuery = ""; state.query = ""; commit(); $("#search").focus();
+        draftQuery = ""; state.query = ""; closeAc(); commit(); $("#search").focus();
       });
       $("#fontSelect").addEventListener("change", (e) => { state.font = e.target.value; applyFont(); syncHash(); });
       $("#sizeRange").addEventListener("input", (e) => { state.size = Number(e.target.value); applySize(); });
