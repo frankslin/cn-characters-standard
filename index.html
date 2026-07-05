@@ -111,51 +111,25 @@
       z-index: 1;
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 10px 0 18px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .brand-mark {
-      width: 30px;
-      height: 30px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line-strong);
-      border-radius: 6px;
-      color: var(--accent);
-      font-family: "Noto Serif SC", serif;
-      font-size: 18px;
-      background: var(--panel);
-    }
-
-    .header-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-
     .theme-toggle {
-      min-width: 58px;
-      height: 38px;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
       display: inline-grid;
       place-items: center;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--panel);
+      background: var(--field);
       color: var(--text);
       cursor: pointer;
-      backdrop-filter: blur(12px);
+      font-size: 17px;
+      line-height: 1;
     }
 
     .hero {
+      position: relative;
       border-radius: 8px;
       padding: 34px 32px;
       background: var(--panel);
@@ -166,7 +140,7 @@
 
     .eyebrow {
       width: fit-content;
-      margin-bottom: 16px;
+      margin-top: 14px;
       padding: 4px 10px;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -188,19 +162,6 @@
     .title-kicker { font-size: clamp(16px, 2.4vw, 24px); color: var(--muted); font-weight: 400; }
     .title-main { font-size: clamp(38px, 6vw, 68px); }
 
-    .sub { max-width: 720px; margin: 18px 0 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
-
-    .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-    .stat {
-      display: inline-flex; align-items: baseline; gap: 6px;
-      padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
-      background: var(--field); font: inherit; font-size: 13px; color: var(--muted);
-      cursor: pointer; transition: border-color .15s, background .15s, color .15s;
-    }
-    .stat:hover { border-color: var(--accent); }
-    .stat b { font-size: 15px; color: var(--text); font-variant-numeric: tabular-nums; }
-    .stat.is-active { background: var(--primary-bg); border-color: var(--primary-border); color: var(--button-active-text); }
-    .stat.is-active b { color: var(--button-active-text); }
 
     .controls {
       position: sticky; top: 0; z-index: 6;
@@ -245,13 +206,7 @@
     }
     select:focus, .btn:focus-visible { outline: none; border-color: var(--accent); }
 
-    .chips { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); }
-    .chip {
-      min-height: 30px; padding: 4px 12px;
-      border: 0; border-radius: 6px; background: transparent; color: var(--muted);
-      cursor: pointer; font: inherit; font-size: 13px;
-    }
-    .chip[aria-pressed="true"] { background: var(--primary-bg); color: var(--button-active-text); }
+
 
     .switch {
       display: inline-flex; align-items: center; gap: 7px;
@@ -405,28 +360,20 @@
 </head>
 <body>
   <main>
-    <nav class="topbar">
-      <div class="brand"><span class="brand-mark">规</span><span>通用规范汉字表 · 检索</span></div>
-      <div class="header-controls">
-        <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换深浅色">深色</button>
-      </div>
-    </nav>
-
     <header class="hero">
-      <div class="eyebrow">《通用规范汉字表》· 附表一 规范字与繁体字、异体字对照表</div>
+      <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换深浅色">🌙</button>
       <h1>
         <span class="title-kicker">中国国务院 2013 年发布 · 8105 字</span>
         <span class="title-main">通用规范汉字表</span>
       </h1>
-      <p class="sub">在线检索 8105 个规范字，并对照其<b>繁体字</b>与<b>异体字</b>（源自附表一）。输入一个字符或它的 Unicode 码位即可精确定位；不输入时向下滚动浏览全表。字形可切换多款中文自由 webfonts。</p>
-      <div class="stats" id="stats"></div>
+      <div class="eyebrow">《通用规范汉字表》· 附表一 规范字与繁体字、异体字对照表</div>
     </header>
 
     <div class="controls">
       <div class="controls-row">
         <div class="search-wrap">
           <input id="search" type="search" autocomplete="off" spellcheck="false"
-                 placeholder="检索：字符（如 干）或码位（如 U+5E72 / 5e72 / 24178）">
+                 placeholder="检索：字符（干）、码位（U+5E72 / 5e72）或序号（1–8105）">
           <button type="button" id="searchClear" class="search-clear" aria-label="清除">×</button>
         </div>
         <div class="field-group">
@@ -439,15 +386,9 @@
         </div>
       </div>
       <div class="controls-row">
-        <div class="chips" role="group" aria-label="字级筛选">
-          <button class="chip" data-lv="0" aria-pressed="true">全部</button>
-          <button class="chip" data-lv="1" aria-pressed="false">一级</button>
-          <button class="chip" data-lv="2" aria-pressed="false">二级</button>
-          <button class="chip" data-lv="3" aria-pressed="false">三级</button>
-        </div>
-        <label class="switch"><input type="checkbox" id="fltTrad">仅含繁体对应</label>
-        <label class="switch"><input type="checkbox" id="fltVar">仅含异体字</label>
-        <label class="switch"><input type="checkbox" id="fltNote">仅含附注</label>
+        <label class="switch"><input type="checkbox" id="fltTrad">含对应繁体</label>
+        <label class="switch"><input type="checkbox" id="fltVar">含异体字</label>
+        <label class="switch"><input type="checkbox" id="fltNote">含附注</label>
       </div>
     </div>
 
@@ -495,7 +436,8 @@
     </div>
 
     <p class="footer">
-      数据来源：《通用规范汉字表》（2013）字表与附表一。字体由 <a href="https://free-fonts.digitalhumanities.dev/" target="_blank" rel="noopener">free-fonts</a> 提供（文津明体、源起/源样明体、霞鹜文楷、Jigmo、思源等），按 <code>unicode-range</code> 切片、按需下载。三级字与异体字多为罕用字，若所选字体缺字会自动回退到覆盖更广的字体。
+      数据来源：《通用规范汉字表》（2013）字表与附表一。字体由 <a href="https://free-fonts.digitalhumanities.dev/" target="_blank" rel="noopener">free-fonts</a> 提供（文津明体、源起/源样明体、霞鹜文楷、Jigmo、思源等），按 <code>unicode-range</code> 切片、按需下载。三级字与异体字多为罕用字，若所选字体缺字会自动回退到覆盖更广的字体。<br>
+      开源项目：<a href="https://github.com/frankslin/cn-characters-standard" target="_blank" rel="noopener">github.com/frankslin/cn-characters-standard</a>
     </p>
   </main>
 
@@ -524,15 +466,15 @@
 
     const FALLBACK = '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3", "Jigmo", "Jigmo SC", serif';
     const FONTS = [
-      { id: "lxgw-gb",     label: "霞鹜文楷 GB · LXGW WenKai GB", family: '"LXGW WenKai GB"', weight: 400 },
+      { id: "noto-serif",  label: "思源宋体 SC · Noto Serif SC", family: '"Noto Serif SC"', weight: 400 },
+      { id: "noto-sans",   label: "思源黑体 SC · Noto Sans SC", family: '"Noto Sans SC"', weight: 400 },
       { id: "wenjin",      label: "文津明体 · WenJin Mincho", family: '"WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3"', weight: 400 },
       { id: "genki",       label: "源起明体 TC · Genki Mincho TC", family: '"GenKiMin2TC"', weight: 400 },
       { id: "genyo",       label: "源样明体 TC · GenYo Mincho TC", family: '"GenYoMin2TC"', weight: 400 },
-      { id: "lxgw",        label: "霞鹜文楷 · LXGW WenKai", family: '"LXGW WenKai"', weight: 400 },
-      { id: "lxgw-tc",     label: "霞鹜文楷 TC · LXGW WenKai TC", family: '"LXGW WenKai TC"', weight: 400 },
       { id: "jigmo",       label: "字云 · Jigmo", family: '"Jigmo", "Jigmo SC"', weight: 400 },
-      { id: "noto-serif",  label: "思源宋体 SC · Noto Serif SC", family: '"Noto Serif SC"', weight: 400 },
-      { id: "noto-sans",   label: "思源黑体 SC · Noto Sans SC", family: '"Noto Sans SC"', weight: 400 },
+      { id: "lxgw-gb",     label: "霞鹜文楷 GB · LXGW WenKai GB", family: '"LXGW WenKai GB"', weight: 400 },
+      { id: "lxgw-tc",     label: "霞鹜文楷 TC · LXGW WenKai TC", family: '"LXGW WenKai TC"', weight: 400 },
+      { id: "lxgw",        label: "霞鹜文楷 · LXGW WenKai", family: '"LXGW WenKai"', weight: 400 },
       { id: "black-sugar", label: "黑糖话梅 · Black Sugar Plum Candy", family: '"Black Sugar Plum Candy"', weight: 700 },
       { id: "sys-serif",   label: "系统宋体 · System Serif", family: "serif", weight: 400 },
       { id: "sys-sans",    label: "系统黑体 · System Sans", family: "sans-serif", weight: 400 },
@@ -573,14 +515,18 @@
     const BATCH = 80;
 
     // ---------- search parsing ----------
-    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'chars', chars:[...]}
+    // Returns {kind:'all'} | {kind:'cp', cp} | {kind:'serial', serial} | {kind:'chars', chars:[...]}
     function parseQuery(q) {
       const t = q.trim();
       if (!t) return { kind: "all" };
       let m = /^(?:u\+|0x|\\u)\s*([0-9a-fA-F]{1,6})$/i.exec(t);
       if (m) return { kind: "cp", cp: parseInt(m[1], 16) };
-      // pure decimal (3+ digits) -> decimal codepoint
-      if (/^\d{3,7}$/.test(t)) { const n = parseInt(t, 10); if (n <= 0x10FFFF) return { kind: "cp", cp: n }; }
+      // pure decimal: 1-8105 → serial number; larger → decimal codepoint
+      if (/^\d+$/.test(t)) {
+        const n = parseInt(t, 10);
+        if (n >= 1 && n <= 8105) return { kind: "serial", serial: n };
+        if (n <= 0x10FFFF) return { kind: "cp", cp: n };
+      }
       // pure hex 2-6 digits -> hex codepoint
       if (/^[0-9a-fA-F]{2,6}$/.test(t) && /[a-fA-F]/.test(t)) return { kind: "cp", cp: parseInt(t, 16) };
       if (/^[0-9a-fA-F]{4,6}$/.test(t)) return { kind: "cp", cp: parseInt(t, 16) };
@@ -597,6 +543,7 @@
         if (state.fltVar && !(r.v && r.v.length)) return false;
         if (state.fltNote && !r._note) return false;
         if (pq.kind === "cp") { if (!r._cps.has(pq.cp)) return false; }
+        else if (pq.kind === "serial") { if (r.s !== pq.serial) return false; }
         else if (pq.kind === "chars") { if (!pq.chars.some(c => r._chs.has(c))) return false; }
         return true;
       });
@@ -610,10 +557,11 @@
       const n = filtered.length;
       let desc = "";
       if (pq.kind === "cp") desc = ` · 匹配码位 ${fmtCp(pq.cp)}（含繁体 / 异体）`;
+      else if (pq.kind === "serial") desc = ` · 序号 ${pq.serial}`;
       else if (pq.kind === "chars") desc = ` · 匹配字符 ${pq.chars.join(" ")}`;
       $("#resultCount").innerHTML = `共 <b>${n.toLocaleString()}</b> 条${desc}`;
       $("#resultHint").innerHTML = n === 0
-        ? '<span class="warn">未找到匹配项，试试其他字符或码位。</span>'
+        ? '<span class="warn">未找到匹配项，试试其他字符、码位或序号。</span>'
         : (state.query ? "" : "向下滚动浏览全表");
     }
 
@@ -634,7 +582,7 @@
       const noteCell = notes.length ? `<div class="note-tags">${notes.join("")}</div>` : '<span class="cell-empty">—</span>';
       return `<tr data-serial="${r.s}">
         <td class="col-serial">${r.s}</td>
-        <td class="col-gc"><span class="gc" data-inspect-char="${esc(r.c)}" data-inspect-cp="${esc(r.cp)}" data-inspect-kind="norm"><span class="han">${esc(r.c)}</span><span class="lv-badge" data-lv="${r.lv}">${["一","二","三"][r.lv-1]}</span></span></td>
+        <td class="col-gc"><span class="gc" data-inspect-char="${esc(r.c)}" data-inspect-cp="${esc(r.cp)}" data-inspect-kind="norm"><span class="han">${esc(r.c)}</span></span></td>
         <td class="col-cp">${esc(r.cp)}</td>
         <td>${trad}</td>
         <td>${vars}</td>
@@ -771,21 +719,10 @@
     function applyTheme() {
       document.documentElement.dataset.theme = state.theme;
       const b = $("#themeToggle");
-      b.textContent = state.theme === "dark" ? "浅色" : "深色";
+      b.textContent = state.theme === "dark" ? "☀" : "🌙";
     }
 
-    // ---------- stats ----------
-    function renderStats() {
-      const total = ROWS.length;
-      const lv = [0, 0, 0]; let hasT = 0, hasV = 0;
-      ROWS.forEach(r => { lv[r.lv - 1]++; if (r.t && r.t.length) hasT++; if (r.v && r.v.length) hasV++; });
-      $("#stats").innerHTML = [
-        ["all", "规范字总数", total], ["lv1", "一级", lv[0]], ["lv2", "二级", lv[1]],
-        ["lv3", "三级", lv[2]], ["trad", "有繁体对应", hasT], ["var", "有异体字", hasV],
-      ].map(([key, k, v]) => `<button type="button" class="stat" data-key="${key}">${k}<b>${v.toLocaleString()}</b></button>`).join("");
-    }
-
-    // Reflect current state onto every control widget (keeps stats <-> filters in sync).
+    // Reflect current state onto every control widget.
     function refreshUI() {
       $("#search").value = draftQuery;
       $("#fontSelect").value = state.font;
@@ -793,10 +730,6 @@
       $("#fltTrad").checked = state.fltTrad;
       $("#fltVar").checked = state.fltVar;
       $("#fltNote").checked = state.fltNote;
-      document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(Number(c.dataset.lv) === state.level)));
-      const isAll = state.level === 0 && !state.fltTrad && !state.fltVar && !state.fltNote && !state.query.trim();
-      const active = { all: isAll, lv1: state.level === 1, lv2: state.level === 2, lv3: state.level === 3, trad: state.fltTrad, var: state.fltVar };
-      document.querySelectorAll(".stat").forEach(s => s.classList.toggle("is-active", !!active[s.dataset.key]));
     }
 
     // Single entry point after any state change.
@@ -850,23 +783,8 @@
       });
       $("#fontSelect").addEventListener("change", (e) => { state.font = e.target.value; applyFont(); syncHash(); });
       $("#sizeRange").addEventListener("input", (e) => { state.size = Number(e.target.value); applySize(); });
-      document.querySelectorAll(".chip").forEach(chip => {
-        chip.addEventListener("click", () => { state.level = Number(chip.dataset.lv); commit(); });
-      });
       ["fltTrad", "fltVar", "fltNote"].forEach(id => {
         $("#" + id).addEventListener("change", (e) => { state[id] = e.target.checked; commit(); });
-      });
-      // Top stat chips drive the same filters, and stay linked to the controls below.
-      $("#stats").addEventListener("click", (e) => {
-        const btn = e.target.closest(".stat"); if (!btn) return;
-        const key = btn.dataset.key;
-        if (key === "all") { state.level = 0; state.fltTrad = state.fltVar = state.fltNote = false; draftQuery = state.query = ""; }
-        else if (key === "lv1" || key === "lv2" || key === "lv3") {
-          const n = Number(key.slice(2)); state.level = state.level === n ? 0 : n;
-        }
-        else if (key === "trad") state.fltTrad = !state.fltTrad;
-        else if (key === "var") state.fltVar = !state.fltVar;
-        commit();
       });
       $("#themeToggle").addEventListener("click", () => {
         state.theme = state.theme === "dark" ? "light" : "dark"; applyTheme(); syncHash();
@@ -892,7 +810,6 @@
 
     // ---------- boot ----------
     readHash();
-    renderStats();
     initControls();
     applyFont();
     applySize();
